@@ -1,0 +1,22 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/msgpack-lite": "^0.1.7",
+    "@types/node": "^13.11.1",
+    "@types/ws": "^7.2.4",
+    "fs": "0.0.1-security",
+    "http": "0.0.1-security",
+    "https": "^1.0.0",
+    "msgpack-lite": "^0.1.26",
+    "path": "^0.12.7",
+    "ws": "^7.2.5"
+  }
+}

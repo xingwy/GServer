@@ -1,0 +1,7 @@
+{
+    "group": 1,
+    "address": {
+        "gateway": {"host": "127.0.0.1", "port": 10000},
+        "center":  {"host": "127.0.0.1", "port": 10001}
+    }
+}

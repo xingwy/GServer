@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir" : "./build",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": false,
+        "strictPropertyInitialization": false,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noImplicitReturns": true,
+        "esModuleInterop": false,
+    },
+    "exclude": [
+        "node_modules",
+    ],
+    "include": [
+        "define/*",
+        "define/**/*",
+        "center/*",
+        "center/**/*",
+        "gateway/*",
+        "gateway/**/*",
+    ]
+}
