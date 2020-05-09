@@ -19,9 +19,16 @@ declare namespace Protocols {
 
     /*************************** Base start ***************************/
     
+    type GatewayLoginAuth = [];
+
+    type CenterLoginInfo = [];
+
     /*************************** Tuple start ***************************/
     interface ProtocolsTuple {
-        [CenterProtocolCode.AuthUserLogin]: number,
+        [GatewayProtocolCode.AuthUserLogin]: GatewayLoginAuth,
+
+
+        [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
         
     }
 
@@ -29,6 +36,11 @@ declare namespace Protocols {
 
 
     /*************************** Code start ***************************/
+    const enum GatewayProtocolCode {
+        Base = 0x100000,                 // 起始段
+        AuthUserLogin = 0x100001,        // 网关登录
+    }
+    
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
         AuthUserLogin = 0x200001,        // 验证角色登录

@@ -59,6 +59,7 @@ export abstract class Session {
         this._socket.onmessage = (event: WebSocket.MessageEvent): void => {
             try {
                 this.onSocketMessage(event);
+                // event.target. ("reply");
             } catch (error) {
                 // TO_LOG
             }
@@ -97,14 +98,14 @@ export abstract class Session {
      */
     public abstract onSocketMessage(event: WebSocket.MessageEvent): void;
 
-    public abstract async receive(from: SessionId, code: ProtocolCode, content: Buffer): Promise<ResultCode>; 
+    public abstract async receive(from: SessionId, code: ProtocolCode, flag: Uint8, content: Buffer): Promise<ResultCode>; 
 
     /**
      * 广播
      * @param content 
      */
     public broadcast(content: Buffer): void {
-        if (this._socket || this._socket.readyState !== this._socket.OPEN) {
+        if (!this._socket || this._socket.readyState !== this._socket.OPEN) {
             return;
         }
         try {
@@ -149,12 +150,17 @@ export class ServiceSession extends Session {
     public onSocketMessage(event: WebSocket.MessageEvent): void {
         let content = <Buffer> event.data;
         // TODO 增加接收处理分发
-
+        for (let s of this._system._sessions.values()) {
+            
+            s.broadcast(Buffer.from("收到，reply"));
+        }
     }
 
-    public async receive(from: SessionId, code: Uint16, content: Buffer): Promise<ResultCode> {
+    public async receive(from: SessionId, code: Uint16, flag: Uint8, content: Buffer): Promise<ResultCode> {
         // TODO 发送检查
         this._socket.send(content);
+        
         return ResultCode.Success;
+
     }
 } 

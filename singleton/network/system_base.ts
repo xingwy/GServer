@@ -3,6 +3,7 @@ import { Slots } from "../structs/slots";
 import { Heap } from "../structs/heap";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
+import { rejects } from "assert";
 
 export abstract class SystemBase {
 
@@ -14,7 +15,7 @@ export abstract class SystemBase {
     public readonly uniqueToSession: Map<Uint64, Session>;
     // 包含连接 断开 连接属性 套接字注册等等
     public readonly _serverType: Protocols.ServerType;
-    protected readonly _sessions: Slots<Session>;
+    public readonly _sessions: Slots<Session>;
     protected readonly _userSessions: Map<Uint64, Session>;
     protected readonly _servicesSession: Map<Uint8, ServiceSession>;
 
@@ -254,8 +255,37 @@ export abstract class SystemBase {
                 return;
             }
         }
-        console.log("fasong");
-        to.receive(this._unique, code, content);
+        to.receive(this._unique, code, 1, content);
+    }
+
+    public invokeProtocol(to: Session, code: Uint32, data: any): any {
+        let token = new TokenSession();
+
+        let promise = new Promise<any>(
+            (resolve: (value: any) => void, reject: (reason: any) => void) => {
+                token.resolve = resolve;
+                token.reject = reject;
+            });
+        token.promise = promise;
+        token.owner = to;
+
+        if (!to) {
+            token.reject(0);
+            return promise;
+        }
+
+        this.openToken(token);
+        let content: Buffer;
+        if (data) {
+            try {
+                content = Buffer.from(MsgpackLite.encode(data));
+            } catch (error) {
+                console.log(error);
+                return;
+            }
+        }
+        to.receive(this._unique, code, 1, content);
+        return promise;
     }
 
     /**

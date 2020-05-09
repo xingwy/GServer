@@ -38,12 +38,15 @@ export class GatewaySystem extends SystemBase {
 
     public open(host: string, port: number): void {
         super.open(host, port);
+        // 监听
         this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
             session.serviceType = Protocols.ServerType.GatewayServic;
             session.unique = GlobelMgr.instance.nextId();
             console.log("连接", session.sign);
             // 创建连接缓存
             session.open();
+            session.broadcast(Buffer.from("11111"));
+            console.log(session.unique, session);
             this.openSession(session);
             this.onSessionOpen(session);
         });

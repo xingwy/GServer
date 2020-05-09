@@ -34,6 +34,7 @@ class Session {
         this._socket.onmessage = (event) => {
             try {
                 this.onSocketMessage(event);
+                // event.target. ("reply");
             }
             catch (error) {
                 // TO_LOG
@@ -65,10 +66,11 @@ class Session {
      * @param content
      */
     broadcast(content) {
-        if (this._socket || this._socket.readyState !== this._socket.OPEN) {
+        if (!this._socket || this._socket.readyState !== this._socket.OPEN) {
             return;
         }
         try {
+            console.log("回消息");
             this._socket.send(content);
         }
         catch (error) {
@@ -101,10 +103,15 @@ class ServiceSession extends Session {
     }
     onSocketMessage(event) {
         let content = event.data;
-        console.log("接收消息", content);
+        console.log("接收", content);
+        // TODO 增加接收处理分发
+        for (let s of this._system._sessions.values()) {
+            s.broadcast(Buffer.from("收到，reply"));
+        }
     }
     async receive(from, code, content) {
-        console.log("发送消息");
+        // TODO 发送检查
+        console.log("发送", content.toString());
         this._socket.send(content);
         return 0 /* Success */;
     }

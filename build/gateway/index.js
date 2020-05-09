@@ -7,7 +7,8 @@ exports.Main = async function (core) {
     let gate = CFG.address.gateway;
     gateway_system_1.GatewaySystem.instance.open(gate.host, gate.port);
     // 进程事件处理
-    process.on("exit", async () => {
+    process.on("exit", async (code) => {
+        console.log("exit");
         await gateway_system_1.GatewaySystem.instance.close();
     });
     process.on("uncaughtException", async (e) => {
@@ -15,9 +16,11 @@ exports.Main = async function (core) {
         await gateway_system_1.GatewaySystem.instance.close();
     });
     process.on("SIGINT", async () => {
+        console.log("SIGINT");
         await gateway_system_1.GatewaySystem.instance.close();
     });
     process.on("SIGTERM", async () => {
+        console.log("SIGTERM");
         await gateway_system_1.GatewaySystem.instance.close();
     });
 };

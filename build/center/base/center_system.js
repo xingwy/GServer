@@ -31,8 +31,10 @@ class CenterSystem extends system_base_1.SystemBase {
         this._accept.open(host, port, 1 /* active */, false, (session) => {
             session.serviceType = 1048576 /* GatewayServic */;
             this._gateSession = session;
+            session.open();
             console.log("连接");
             setInterval(() => {
+                // 向geteway发送消息 拿session
                 this.publishProtocol(this._gateSession, 1, Buffer.from("hello"));
             }, 5000);
         });

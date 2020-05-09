@@ -53,6 +53,7 @@ class Accept {
             });
             this.pipe.on("connection", (socket, request) => {
                 session = this.onConnection(socket, request);
+                socket.send("weqwe");
                 callback(session);
             });
             this._pipe.on("error", (error) => {

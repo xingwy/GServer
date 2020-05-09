@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const session_1 = require("./base/session");
 const slots_1 = require("../structs/slots");
 const heap_1 = require("../structs/heap");
 const Tool = require("../utils/tool");
@@ -224,8 +225,33 @@ class SystemBase {
                 return;
             }
         }
-        console.log("fasong");
         to.receive(this._unique, code, content);
+    }
+    invokeProtocol(to, code, data) {
+        let token = new session_1.TokenSession();
+        let promise = new Promise((resolve, reject) => {
+            token.resolve = resolve;
+            token.reject = reject;
+        });
+        token.promise = promise;
+        token.owner = to;
+        if (!to) {
+            token.reject(0);
+            return promise;
+        }
+        this.openToken(token);
+        let content;
+        if (data) {
+            try {
+                content = Buffer.from(MsgpackLite.encode(data));
+            }
+            catch (error) {
+                console.log(error);
+                return;
+            }
+        }
+        to.receive(this._unique, code, content);
+        return promise;
     }
     /**
      * 开启session

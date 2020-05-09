@@ -72,6 +72,7 @@ abstract class Accept {
 
             this.pipe.on("connection", (socket: WebSocket, request: http.IncomingMessage) => {
                 session = this.onConnection(socket, request);
+                socket.send("weqwe");
                 callback(session);
             });
 

@@ -29,12 +29,15 @@ class GatewaySystem extends system_base_1.SystemBase {
     }
     open(host, port) {
         super.open(host, port);
+        // 监听
         this._serverAccept.open(host, port, 2 /* passive */, false, (session) => {
             session.serviceType = 1048576 /* GatewayServic */;
             session.unique = globel_1.GlobelMgr.instance.nextId();
             console.log("连接", session.sign);
             // 创建连接缓存
             session.open();
+            session.broadcast(Buffer.from("11111"));
+            console.log(session.unique, session);
             this.openSession(session);
             this.onSessionOpen(session);
         });

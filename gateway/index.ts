@@ -9,7 +9,8 @@ export const Main = async function(core: string) {
 
 
     // 进程事件处理
-    process.on("exit", async () => {
+    process.on("exit", async (code) => {
+        console.log("exit");
         await GatewaySystem.instance.close();
     });
 
@@ -19,10 +20,12 @@ export const Main = async function(core: string) {
     });
 
     process.on("SIGINT", async () => {
+        console.log("SIGINT");
         await GatewaySystem.instance.close();
     });
 
     process.on("SIGTERM", async () => {
+        console.log("SIGTERM");
         await GatewaySystem.instance.close();
     });
 };
