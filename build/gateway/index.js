@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gateway_system_1 = require("./base/gateway_system");
+const gateway_system_1 = require("./core/gateway_system");
 const CFG = require("../config.json");
 exports.Main = async function (core) {
     // 初始化中心系统

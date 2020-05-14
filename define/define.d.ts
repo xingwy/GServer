@@ -18,6 +18,7 @@ interface IAddressInfo {
 
 declare const enum ResultCode {
     Success = 0,     // 成功
+    Error,
 }
 
 declare type SessionId = number;

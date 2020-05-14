@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const WebSocket = require("ws");
+const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
 class TokenSession {
     constructor() {
         this.TIMEOUT = 10000;
@@ -70,7 +71,6 @@ class Session {
             return;
         }
         try {
-            console.log("回消息");
             this._socket.send(content);
         }
         catch (error) {
@@ -103,17 +103,70 @@ class ServiceSession extends Session {
     }
     onSocketMessage(event) {
         let content = event.data;
-        console.log("接收", content);
-        // TODO 增加接收处理分发
-        for (let s of this._system._sessions.values()) {
-            s.broadcast(Buffer.from("收到，reply"));
+        console.log(content);
+        // 增加接收处理分发
+        try {
+            if (content.length < FIXED_BUFFER) {
+                console.log("数据长度不足");
+                return;
+            }
+            let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
+            this._system.receiveProtocol(from, to, opcode, from, tuple);
+        }
+        catch (error) {
+            console.log(error);
         }
     }
-    async receive(from, code, content) {
+    async receive(from, opcode, flag, content) {
         // TODO 发送检查
-        console.log("发送", content.toString());
-        this._socket.send(content);
+        try {
+            let buffer = this.setFixedData(from, opcode, flag, content);
+            this._socket.send(buffer);
+        }
+        catch (error) {
+            console.log(error);
+            return 1 /* Error */;
+        }
         return 0 /* Success */;
+    }
+    buildFixedData(content) {
+        let offset = 0;
+        let size = content.readUInt32LE(offset);
+        offset += 4;
+        if (size !== content.length) {
+            // 校验数据长度
+            console.log("消息长度不足");
+            throw (new Error("消息长度不足"));
+        }
+        let from = content.readDoubleLE(offset);
+        offset += 8;
+        let to = content.readDoubleLE(offset);
+        offset += 8;
+        let opcode = content.readUInt32LE(offset);
+        offset += 4;
+        let flag = content.readUInt8(offset);
+        offset += 1;
+        let tuple = content.slice(offset);
+        return [from, to, opcode, flag, tuple];
+    }
+    setFixedData(from, opcode, flag, content) {
+        let size = content && content.length || 0;
+        let buffer = Buffer.allocUnsafe(FIXED_BUFFER + size);
+        let offset = 0;
+        buffer.writeUInt32LE((buffer.byteLength), offset);
+        offset += 4;
+        buffer.writeDoubleLE(from, offset);
+        offset += 8;
+        buffer.writeDoubleLE(this.unique);
+        offset += 8;
+        buffer.writeInt32LE(opcode, offset);
+        offset += 4;
+        buffer.writeUInt8(flag, offset);
+        offset += 1;
+        if (content) {
+            content.copy(buffer, offset);
+        }
+        return buffer;
     }
 }
 exports.ServiceSession = ServiceSession;

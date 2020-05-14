@@ -11,6 +11,7 @@ const enum AcceptState {
 }
 const enum AcceptType {
     server = 1,
+    client = 2,
 } 
 
 abstract class Accept {
@@ -94,6 +95,29 @@ export class AcceptServer extends Accept {
     constructor(system: SystemBase) {
         super(system);
         this._type = AcceptType.server;
+    }
+
+    public get type(): AcceptType {
+        return this._type;
+    }
+    protected onOpen(socket: WebSocket): Session {
+        return new ServiceSession(this.system, socket, null);
+    }
+    protected onListening(): void {
+    }
+    protected onConnection(socket: WebSocket, request: http.IncomingMessage): Session {
+        return new ServiceSession(this.system, socket, request);
+    }
+    protected onError(error: Error): void {
+    }
+    
+}
+
+export class AcceptClient extends Accept {
+    private _type: AcceptType;
+    constructor(system: SystemBase) {
+        super(system);
+        this._type = AcceptType.client;
     }
 
     public get type(): AcceptType {

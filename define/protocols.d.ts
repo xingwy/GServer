@@ -11,6 +11,11 @@ declare namespace Protocols {
         SystemServic = 0x400000,    // 系统服务
     }
 
+    const enum SignType {
+        Ping = 1,
+        Auth = 2,
+
+    }
     const enum MessageType {
         Push = 0x01,   // 推送
         Wait = 0x02,   // 等待回应
@@ -18,13 +23,15 @@ declare namespace Protocols {
     }
 
     /*************************** Base start ***************************/
-    
-    type GatewayLoginAuth = [];
+    // account password name sex 
+    type CreateUser = [string, string, string, number];
+    type GatewayLoginAuth = [string, string];
 
     type CenterLoginInfo = [];
 
     /*************************** Tuple start ***************************/
     interface ProtocolsTuple {
+        [GatewayProtocolCode.CreateUser]: CreateUser,
         [GatewayProtocolCode.AuthUserLogin]: GatewayLoginAuth,
 
 
@@ -38,12 +45,13 @@ declare namespace Protocols {
     /*************************** Code start ***************************/
     const enum GatewayProtocolCode {
         Base = 0x100000,                 // 起始段
+        CreateUser = 0x200001,           // 创建角色
         AuthUserLogin = 0x100001,        // 网关登录
     }
     
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
-        AuthUserLogin = 0x200001,        // 验证角色登录
+        AuthUserLogin = 0x200002,        // 验证角色登录
         Max = 0x2fffff,
     }
     const ProtocolsCodeMax = 0xF00000;

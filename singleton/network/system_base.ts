@@ -3,8 +3,7 @@ import { Slots } from "../structs/slots";
 import { Heap } from "../structs/heap";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
-import { rejects } from "assert";
-
+const UNIQUE_SIZE = 4;
 export abstract class SystemBase {
 
     public get serverType(): Protocols.ServerType {
@@ -41,7 +40,7 @@ export abstract class SystemBase {
         this._waitHandlers = new Map<ProtocolCode, {exec: (this: SystemBase, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
     }
 
-    public abstract onReceiveProtocol(from: Uint64, code: Uint16, flags: Uint8, content: Buffer): boolean;
+    public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
     public abstract onSessionOpen(session: Session): void;
     public abstract onSessionError(session: Session, reason: ResultCode): void;
     public abstract onSessionClose(session: Session, reason: ResultCode): void;
@@ -52,11 +51,11 @@ export abstract class SystemBase {
      * @param sign 验证许可证
      * @param handler 处理函数
      */
-    public registerProtocol<T extends keyof Protocols.ProtocolsTuple>(code: T, sign: Uint8, handler: (this: SystemBase, session: Session, tuple: Protocols.ProtocolsTuple[T]) => void): void {
-        if (this._handlers.has(code)) {
+    public registerProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: (this: SystemBase, session: Session, tuple: Protocols.ProtocolsTuple[T]) => void): void {
+        if (this._handlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = code & Protocols.ProtocolsCodeMax;
+        let type = opcode & Protocols.ProtocolsCodeMax;
         if (this.serverType !== type) {
             //  TODO_LOG 服务类型不一致
         }
@@ -64,22 +63,22 @@ export abstract class SystemBase {
             await handler.call(this, session, tuple);
         };
 
-        this._handlers.set(code, {
+        this._handlers.set(opcode, {
             sign,
             exec,
         });
     }
     /**
      * 注册等待式消息协议
-     * @param code 协议码
+     * @param opcode 协议码
      * @param sign 验证许可证
      * @param handler 处理函数
      */
-    public registerWaitProtocol<T extends keyof Protocols.ProtocolsTuple>(code: T, sign: Uint8, handler: ((this: SystemBase, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]) => void)): void {
-        if (this._waitHandlers.has(code)) {
+    public registerWaitProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: ((this: SystemBase, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]) => void)): void {
+        if (this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = code & Protocols.ProtocolsCodeMax;
+        let type = opcode & Protocols.ProtocolsCodeMax;
         if (this.serverType !== type) {
             // TODO_LOG
         }
@@ -87,7 +86,7 @@ export abstract class SystemBase {
         let exec = async function(this: SystemBase, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]): Promise<void> {
             await handler.call(this, session, token, tuple);
         };
-        this._waitHandlers.set(code, {
+        this._waitHandlers.set(opcode, {
             sign,
             exec,
         });
@@ -96,18 +95,18 @@ export abstract class SystemBase {
     /**
      * 处理协议
      * @param from 源session
-     * @param code 协议码
+     * @param opcode 协议码
      * @param content 数据
      */
-    public handleProtocol(from: Session, code: Uint32, content: Buffer): void {
+    public handleProtocol(from: Session, opcode: Uint32, content: Buffer): void {
         // if (handler)
-        if (!this._handlers.has(code)) {
+        if (!this._handlers.has(opcode)) {
             // TODO_LOG
             return;
         }
-        let handler = this._handlers.get(code);
+        let handler = this._handlers.get(opcode);
         if (!(handler.sign & from.sign)) {
-            if (code === 0x000001) {
+            if (opcode === 0x000001) {
                 // ping网络操作
                 return;
             }
@@ -128,17 +127,17 @@ export abstract class SystemBase {
     /**
      * 处理等待式消息协议
      * @param from 源session
-     * @param code 协议码
+     * @param opcode 协议码
      * @param token token标识
      * @param content 数据内容
      */
-    public handleWaitProtocol(from: Session, code: Uint32, token: Uint32, content: Buffer): void {
-        if (!this._waitHandlers.has(code)) {
+    public handleWaitProtocol(from: Session, opcode: Uint32, token: Uint32, content: Buffer): void {
+        if (!this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
-        let handler = this._waitHandlers.get(code);
+        let handler = this._waitHandlers.get(opcode);
         if (!(handler.sign & from.sign)) {
-            if (code === 0x000001) {
+            if (opcode === 0x000001) {
                 // ping网络操作
                 return;
             }
@@ -160,11 +159,11 @@ export abstract class SystemBase {
     /**
      * 处理回复式消息协议
      * @param from 源session
-     * @param code 协议码
+     * @param opcode 协议码
      * @param token token标识
      * @param content 数据内容
      */
-    public handleReplyProtocol(from: Session, code: Uint32, token: Uint32, content: Buffer): void {
+    public handleReplyProtocol(from: Session, opcode: Uint32, token: Uint32, content: Buffer): void {
         let tokenSession = this._tokens.free(token);
         if (!tokenSession) {
             // TODO_LOG
@@ -176,7 +175,7 @@ export abstract class SystemBase {
             tokenSession.reject(Infinity);
             return;
         }
-        if (code !== tokenSession.code) {
+        if (opcode !== tokenSession.opcode) {
             tokenSession.reject(Infinity);
             return;
         }
@@ -195,24 +194,24 @@ export abstract class SystemBase {
     /**
      * 接收协议
      * @param from 源session
-     * @param code 协议码
+     * @param opcode 协议码
      * @param token token标识
      * @param content 数据内容
      */
-    public receiveProtocol(from: Uint64, to: Uint64, code: Uint32, flags: Uint8, content: Buffer): void {
+    public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         console.log("接收消息");
         let session = this.uniqueToSession.get(from);
         if (session === null) {
             return;
         }
 
-        if (!this.onReceiveProtocol(from, code, flags, content)) {
+        if (!this.onReceiveProtocol(from, opcode, flags, content)) {
             // TODO 关闭session
         }
 
         switch (flags) {
             case Protocols.MessageType.Push: {
-                this.handleProtocol(session, code, content);
+                this.handleProtocol(session, opcode, content);
                 break;
             }
             case Protocols.MessageType.Wait: {
@@ -222,7 +221,7 @@ export abstract class SystemBase {
                 }
                 // 截取token
                 let token: Uint32 = content.readInt32LE(0);
-                this.handleWaitProtocol(session, code, token, content.slice(4));
+                this.handleWaitProtocol(session, opcode, token, content.slice(4));
                 break;
             }
             case Protocols.MessageType.Reply: {
@@ -232,7 +231,7 @@ export abstract class SystemBase {
                 }
                 // 截取token
                 let token: Uint32 = content.readInt32LE(0);
-                this.handleWaitProtocol(session, code, token, content.slice(4));
+                this.handleWaitProtocol(session, opcode, token, content.slice(4));
                 break;
             }
             default: {
@@ -241,7 +240,7 @@ export abstract class SystemBase {
         }
     }
 
-    public publishProtocol(to: Session, code: Uint32, data: any): void {
+    public publishProtocol(to: Session, opcode: Uint32, data: any): void {
         
         if (!to) {
             return;
@@ -255,10 +254,10 @@ export abstract class SystemBase {
                 return;
             }
         }
-        to.receive(this._unique, code, 1, content);
+        to.receive(this._unique, opcode, Protocols.MessageType.Push, content);
     }
 
-    public invokeProtocol(to: Session, code: Uint32, data: any): any {
+    public invokeProtocol(to: Session, opcode: Uint32, data: any): any {
         let token = new TokenSession();
 
         let promise = new Promise<any>(
@@ -284,8 +283,37 @@ export abstract class SystemBase {
                 return;
             }
         }
-        to.receive(this._unique, code, 1, content);
+        to.receive(this._unique, opcode, Protocols.MessageType.Wait, content);
         return promise;
+    }
+
+    public replyProtocol(to: Session, opcode: Uint32, token: Uint32, data: any): any {
+        
+        if (!to) {
+            console.log("reply session 失效");
+            return;
+        }
+
+        let buffer: Buffer;
+        let size = 0;
+        if (data) {
+            try {
+                buffer = Buffer.from(MsgpackLite.encode(data));
+                size += buffer.length;
+            } catch (error) {
+                console.log("error");
+            }
+        }
+
+        let content: Buffer = Buffer.allocUnsafe(UNIQUE_SIZE + size);
+        let offset = 0;
+        content.writeInt32LE(token, offset);
+        offset += UNIQUE_SIZE;
+        if (buffer) {
+            buffer.copy(content, offset);
+        }
+        // 系统回复
+        to.receive(this._unique, opcode, Protocols.MessageType.Reply, content);
     }
 
     /**

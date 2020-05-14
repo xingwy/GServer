@@ -1,4 +1,4 @@
-import { GatewaySystem } from "./base/gateway_system";
+import { GatewaySystem } from "./core/gateway_system";
 
 const CFG = require("../config.json");
 

@@ -45,7 +45,6 @@ export class GatewaySystem extends SystemBase {
             console.log("连接", session.sign);
             // 创建连接缓存
             session.open();
-            session.broadcast(Buffer.from("11111"));
             console.log(session.unique, session);
             this.openSession(session);
             this.onSessionOpen(session);
