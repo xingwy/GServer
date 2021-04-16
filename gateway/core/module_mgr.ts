@@ -1,6 +1,6 @@
 import { GatewaySystem } from "./gateway_system";
-import { SystemBase } from "../../singleton/network/system_base";
-import { Session } from "../../singleton/network/base/session";
+import { SystemBase } from "../../singleton/system/system_base";
+import { Session } from "../../singleton/network/session";
 import { ModuleUserMgr } from "../modules/module_user";
 
 GatewaySystem.instance.registerProtocol(

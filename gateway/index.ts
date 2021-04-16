@@ -1,4 +1,5 @@
 import { GatewaySystem } from "./core/gateway_system";
+import { MongoMgr } from "../singleton/db/mongo";
 
 const CFG = require("../config.json");
 
@@ -9,6 +10,11 @@ export const Main = async function(core: string) {
     // 开启网关连接  提供服务进程连接
     GatewaySystem.instance.openServer(gate.host, gate.port);
     GatewaySystem.instance.openClient(client.host, client.port);
+
+    // 初始化DB
+    let uri = CFG.mongo.uri;
+    await MongoMgr.instance.init(uri);
+
     // 进程事件处理
     process.on("exit", async (code) => {
         console.log("exit");

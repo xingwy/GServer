@@ -1,6 +1,6 @@
-import { SystemBase } from "../../singleton/network/system_base";
-import { Session } from "../../singleton/network/base/session";
-import { AcceptServer, AcceptClient } from "../../singleton/network/base/accept";
+import { SystemBase } from "../../singleton/system/system_base";
+import { Session } from "../../singleton/network/session";
+import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
 import { GlobelMgr } from "../../singleton/utils/globel";
 
 export class GatewaySystem extends SystemBase {

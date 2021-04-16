@@ -2,7 +2,7 @@ import * as http from "http";
 import * as https from "https";
 import * as net from "net";
 import * as WebSocket from "ws";
-import { SystemBase } from "../system_base";
+import { SystemBase } from "../system/system_base";
 import { Session, ServiceSession, ClientSession } from "./session";
 const enum AcceptState {
     connecting,

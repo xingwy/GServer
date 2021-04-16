@@ -1,5 +1,5 @@
-import { Session } from "../../singleton/network/base/session";
-import { SystemBase } from "../../singleton/network/system_base";
+import { Session } from "../../singleton/network/session";
+import { SystemBase } from "../../singleton/system/system_base";
 import { CenterSystem } from "../base/center_system";
 
 

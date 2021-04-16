@@ -1,4 +1,4 @@
-import { Session, TokenSession, ServiceSession } from "./base/session";
+import { Session, TokenSession, ServiceSession } from "../network/session";
 import { Slots } from "../structs/slots";
 import { Heap } from "../structs/heap";
 import * as Http from "http";

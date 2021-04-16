@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as WebSocket from "ws";
-import { SystemBase } from "../system_base";
+import { SystemBase } from "../system/system_base";
 
 const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
 
