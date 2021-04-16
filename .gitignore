@@ -1,7 +1,7 @@
 # 忽略所有导入模块,
 /node_modules
 # 忽略编译文件
-build
+/build
 *.js
 package-lock.json
 

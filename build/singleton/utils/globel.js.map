@@ -1,1 +1,0 @@
-{"version":3,"file":"globel.js","sourceRoot":"","sources":["../../../singleton/utils/globel.ts"],"names":[],"mappings":";;AACA,MAAa,SAAS;IAQlB;QACI,IAAI,CAAC,OAAO,GAAG,CAAC,CAAC;IACrB,CAAC;IARM,MAAM,KAAK,QAAQ;QACtB,OAAO,IAAI,CAAC,SAAS,CAAC;IAC1B,CAAC;IAOM,MAAM;QACT,OAAO,EAAE,IAAI,CAAC,OAAO,CAAC;IAC1B,CAAC;;AAPc,mBAAS,GAAc,IAAI,SAAS,EAAE,CAAC;AAN1D,8BAcC"}
