@@ -1,6 +1,6 @@
 import { SystemBase } from "../../singleton/network/system_base";
 import { Session } from "../../singleton/network/base/session";
-import { AcceptServer } from "../../singleton/network/base/accept";
+import { AcceptServer, AcceptClient } from "../../singleton/network/base/accept";
 import { GlobelMgr } from "../../singleton/utils/globel";
 
 export class GatewaySystem extends SystemBase {
@@ -8,7 +8,11 @@ export class GatewaySystem extends SystemBase {
     private static _instance: GatewaySystem = new GatewaySystem();
 
     protected _serverAccept: AcceptServer;
-    protected _centerSession: Session;     
+    protected _clientAccept: AcceptClient;
+    protected _centerSession: Session;
+    // 客户端连接
+    protected readonly _clients: Map<Uint64, Session>;
+
     public static get instance(): GatewaySystem {
         return this._instance;
     }
@@ -16,6 +20,8 @@ export class GatewaySystem extends SystemBase {
     constructor() {
         super(Protocols.ServerType.CenterServic);
         this._serverAccept = new AcceptServer(this);
+        this._clientAccept = new AcceptClient(this);
+        this._clients = new Map<Uint64, Session>();
     }
     public onReceiveProtocol(from: number, code: number, flags: number, content: Buffer): boolean {
         return true;
@@ -36,23 +42,30 @@ export class GatewaySystem extends SystemBase {
         process.exit(0);
     }
 
-    public open(host: string, port: number): void {
-        super.open(host, port);
-        // 监听
+    public openServer(host: string, port: number): void {
+        this.open(host, port);
+
+        // 监听 进程通信
         this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
             session.serviceType = Protocols.ServerType.GatewayServic;
+            // 开启启用随机ID
             session.unique = GlobelMgr.instance.nextId();
-            console.log("连接", session.sign);
+            // 创建连接 加入事件处理
+            session.open();
+            this.openSession(session);
+        });
+    }
+
+    public openClient(host: string, port: number): void {
+        this.open(host, port);
+        // 监听 客户端连接
+        this._clientAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
+            session.serviceType = Protocols.ServerType.Client;
+            // TODO 采用用户ID
+            session.unique = GlobelMgr.instance.nextId();
             // 创建连接缓存
             session.open();
-            console.log(session.unique, session);
             this.openSession(session);
-            this.onSessionOpen(session);
         });
-        
-        // this._gateSession = session;
-        // console.log(this._gateSession);
-
-        // let session = await this._serverAccept.open(host, port, Protocols.AcceptOperate.active, false);
     }
 }

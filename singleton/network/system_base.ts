@@ -1,6 +1,7 @@
 import { Session, TokenSession, ServiceSession } from "./base/session";
 import { Slots } from "../structs/slots";
 import { Heap } from "../structs/heap";
+import * as Http from "http";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
 const UNIQUE_SIZE = 4;
@@ -24,6 +25,7 @@ export abstract class SystemBase {
 
     private readonly _handlers: Map<ProtocolCode, {exec: (this: SystemBase, session: Session, tuple: any) => void, sign: number}>;
     private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: SystemBase, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
+    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: SystemBase, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>;
     constructor(serverType: Protocols.ServerType) {
 
         this._serverType = serverType;
@@ -38,12 +40,36 @@ export abstract class SystemBase {
         // 事件管理
         this._handlers = new Map<ProtocolCode, {exec: (this: SystemBase, session: Session, tuple: any) => void, sign: number}>();
         this._waitHandlers = new Map<ProtocolCode, {exec: (this: SystemBase, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
+        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: SystemBase, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>();
     }
 
     public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
     public abstract onSessionOpen(session: Session): void;
     public abstract onSessionError(session: Session, reason: ResultCode): void;
     public abstract onSessionClose(session: Session, reason: ResultCode): void;
+
+    /**
+     * 注册HTTP请求协议
+     * @param path 请求路径
+     * @param type 类型
+     * @param handler 处理
+     * @returns 
+     */
+    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: SystemBase, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]) => void) {
+        if (this._requestHandlers.has(path)) {
+            // TODO_LOG
+            return;
+        }
+        let exec = async function(this: SystemBase, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]): Promise<void> {
+            await handler.call(this, res, tuple);
+        };
+
+        // 映射表
+        this._requestHandlers.set(path, {
+            type,
+            exec,
+        });
+    }
 
     /**
      * 注册推送式消息协议
@@ -199,7 +225,6 @@ export abstract class SystemBase {
      * @param content 数据内容
      */
     public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
-        console.log("接收消息");
         let session = this.uniqueToSession.get(from);
         if (session === null) {
             return;
@@ -340,9 +365,16 @@ export abstract class SystemBase {
                 this._servicesSession.set(session.unique, <ServiceSession> session);
                 break;
             }
+            case Protocols.ServerType.Client: {
+                // 客户端服务不操作
+                this._userSessions.set(session.unique, <ServiceSession> session);
+                break;
+            }
             default:
                 break; 
         }
+        this.onSessionOpen(session);
+
         return session.handle;
     }
 
@@ -373,6 +405,12 @@ export abstract class SystemBase {
             case Protocols.ServerType.SystemServic: {
                 if (this._servicesSession.has(session.unique)) {
                     this._servicesSession.delete(session.unique);
+                }
+                break;
+            }
+            case Protocols.ServerType.SystemServic: {
+                if (this._userSessions.has(session.unique)) {
+                    this._userSessions.delete(session.unique);
                 }
                 break;
             }

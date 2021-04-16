@@ -10,6 +10,7 @@ export class GlobelMgr {
     constructor() {
         this._nextId = 1;
     }
+    // TODO 建立取ID规则
     public nextId(): number {
         return ++this._nextId;
     }

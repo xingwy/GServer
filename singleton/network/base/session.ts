@@ -99,7 +99,7 @@ export abstract class Session {
      */
     public abstract onSocketMessage(event: WebSocket.MessageEvent): void;
 
-    public abstract async receive(from: SessionId, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<ResultCode>; 
+    public abstract receive(from: SessionId, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<ResultCode>; 
 
     /**
      * 广播
@@ -137,7 +137,8 @@ export abstract class Session {
      * @param event 
      */
     protected onSocketClose(event: WebSocket.CloseEvent): void {
-
+        // 断开时调用
+        this._system.closeSession(this.unique, 0);
     }
 }
 

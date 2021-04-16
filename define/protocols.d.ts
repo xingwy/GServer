@@ -9,6 +9,7 @@ declare namespace Protocols {
         CenterServic = 0x200000,    // 中心服务
         FeatureServic = 0x300000,   // 功能服务
         SystemServic = 0x400000,    // 系统服务
+        Client = 0x900000,          // 客户端类型
     }
 
     const enum SignType {
@@ -39,7 +40,19 @@ declare namespace Protocols {
         
     }
 
+    interface RequestTuple {
+        [HttpProtocolPath.Create]: CreateUser,
+        [HttpProtocolPath.Login]: GatewayLoginAuth,
+    }
+
     /*************************** Tuple end ***************************/
+
+    /*************************** Http start ***************************/
+    const enum HttpProtocolPath {
+        Create = "/user/create",
+        Login = "/user/login",
+    }
+    /*************************** Http end ***************************/
 
 
     /*************************** Code start ***************************/
@@ -60,6 +73,11 @@ declare namespace Protocols {
     const enum AcceptOperate {
         active = 1,
         passive,
+    }
+
+    const enum RequestType {
+        Get = 1,
+        Post = 2,
     }
 
 }

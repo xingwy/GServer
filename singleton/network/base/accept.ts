@@ -3,7 +3,7 @@ import * as https from "https";
 import * as net from "net";
 import * as WebSocket from "ws";
 import { SystemBase } from "../system_base";
-import { Session, ServiceSession } from "./session";
+import { Session, ServiceSession, ClientSession } from "./session";
 const enum AcceptState {
     connecting,
     connected,
@@ -40,6 +40,7 @@ abstract class Accept {
     public open(host: string, port: number, operate: Protocols.AcceptOperate, flag: boolean, callback: (session: Session) => void): void {
         let session;
         if (operate === Protocols.AcceptOperate.active) {
+            // 连接模式
             this._state = AcceptState.connecting;
             this._address = {address: host, port, family: ""};
             let pipe: WebSocket;
@@ -50,10 +51,11 @@ abstract class Accept {
             } else {
                 pipe = new WebSocket(`ws://${host}:${port}`);
             }
+            // 开启通道
             session = this.onOpen(pipe);
             callback(session);
-            
         } else {
+            // 接收模式
             if (flag) {
                 let pipe = http.createServer({
                     
@@ -124,12 +126,12 @@ export class AcceptClient extends Accept {
         return this._type;
     }
     protected onOpen(socket: WebSocket): Session {
-        return new ServiceSession(this.system, socket, null);
+        return new ClientSession(this.system, socket, null);
     }
     protected onListening(): void {
     }
     protected onConnection(socket: WebSocket, request: http.IncomingMessage): Session {
-        return new ServiceSession(this.system, socket, request);
+        return new ClientSession(this.system, socket, request);
     }
     protected onError(error: Error): void {
     }
