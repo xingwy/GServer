@@ -5,7 +5,7 @@ import * as Http from "http";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
 const UNIQUE_SIZE = 4;
-export abstract class SystemBase {
+export abstract class System {
 
     public get serverType(): Protocols.ServerType {
         return this._serverType;
@@ -23,9 +23,9 @@ export abstract class SystemBase {
     protected readonly _tokensHeap: Heap<TokenSession>;
     protected _unique: Uint64;
 
-    private readonly _handlers: Map<ProtocolCode, {exec: (this: SystemBase, session: Session, tuple: any) => void, sign: number}>;
-    private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: SystemBase, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
-    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: SystemBase, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>;
+    private readonly _handlers: Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>;
+    private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
+    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>;
     constructor(serverType: Protocols.ServerType) {
 
         this._serverType = serverType;
@@ -38,9 +38,9 @@ export abstract class SystemBase {
         this._tokens = new Slots<TokenSession>();
         this._tokensHeap = new Heap<TokenSession>((l: TokenSession, r: TokenSession): boolean => (l.value < r.value));
         // 事件管理
-        this._handlers = new Map<ProtocolCode, {exec: (this: SystemBase, session: Session, tuple: any) => void, sign: number}>();
-        this._waitHandlers = new Map<ProtocolCode, {exec: (this: SystemBase, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
-        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: SystemBase, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>();
+        this._handlers = new Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>();
+        this._waitHandlers = new Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
+        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: System, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>();
     }
 
     public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
@@ -55,12 +55,12 @@ export abstract class SystemBase {
      * @param handler 处理
      * @returns 
      */
-    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: SystemBase, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]) => void) {
+    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: System, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]) => void) {
         if (this._requestHandlers.has(path)) {
             // TODO_LOG
             return;
         }
-        let exec = async function(this: SystemBase, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]): Promise<void> {
+        let exec = async function(this: System, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]): Promise<void> {
             await handler.call(this, res, tuple);
         };
 
@@ -77,7 +77,7 @@ export abstract class SystemBase {
      * @param sign 验证许可证
      * @param handler 处理函数
      */
-    public registerProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: (this: SystemBase, session: Session, tuple: Protocols.ProtocolsTuple[T]) => void): void {
+    public registerProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: (this: System, session: Session, tuple: Protocols.ProtocolsTuple[T]) => void): void {
         if (this._handlers.has(opcode)) {
             // TODO_LOG
         }
@@ -85,7 +85,7 @@ export abstract class SystemBase {
         if (this.serverType !== type) {
             //  TODO_LOG 服务类型不一致
         }
-        let exec = async function(this: SystemBase, session: Session, tuple: Protocols.ProtocolsTuple[T]): Promise<void> {
+        let exec = async function(this: System, session: Session, tuple: Protocols.ProtocolsTuple[T]): Promise<void> {
             await handler.call(this, session, tuple);
         };
 
@@ -100,7 +100,7 @@ export abstract class SystemBase {
      * @param sign 验证许可证
      * @param handler 处理函数
      */
-    public registerWaitProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: ((this: SystemBase, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]) => void)): void {
+    public registerWaitProtocol<T extends keyof Protocols.ProtocolsTuple>(opcode: T, sign: Uint8, handler: ((this: System, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]) => void)): void {
         if (this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
@@ -109,7 +109,7 @@ export abstract class SystemBase {
             // TODO_LOG
         }
         
-        let exec = async function(this: SystemBase, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]): Promise<void> {
+        let exec = async function(this: System, session: Session, token: Uint32, tuple: Protocols.ProtocolsTuple[T]): Promise<void> {
             await handler.call(this, session, token, tuple);
         };
         this._waitHandlers.set(opcode, {

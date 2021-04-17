@@ -1,4 +1,4 @@
-import { CenterSystem } from "./base/center_system";
+import { CenterSystem } from "./core/center_system";
 
 const CFG = require("../config.json");
 

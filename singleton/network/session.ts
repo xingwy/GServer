@@ -1,6 +1,6 @@
 import * as http from "http";
 import * as WebSocket from "ws";
-import { SystemBase } from "../system/system_base";
+import { System } from "../core/system";
 
 const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
 
@@ -37,9 +37,9 @@ export abstract class Session {
     protected _address: string;
     protected _port: number;
     protected _socket: WebSocket;
-    protected _system: SystemBase;
+    protected _system: System;
 
-    constructor(system: SystemBase, socket: WebSocket, request: http.IncomingMessage) {
+    constructor(system: System, socket: WebSocket, request: http.IncomingMessage) {
 
         this.sign = 0x01;
         this._socket = socket;
@@ -145,7 +145,7 @@ export abstract class Session {
 export class ServiceSession extends Session {
 
     public readonly userSession: Set<Session>;
-    constructor(system: SystemBase, socket: WebSocket, request: http.IncomingMessage) {
+    constructor(system: System, socket: WebSocket, request: http.IncomingMessage) {
         super(system, socket, request);
     }
 

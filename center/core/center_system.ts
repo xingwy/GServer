@@ -1,8 +1,8 @@
-import { SystemBase } from "../../singleton/system/system_base";
+import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { AcceptServer } from "../../singleton/network/accept";
 
-export class CenterSystem extends SystemBase {
+export class CenterSystem extends System {
 
     private static _instance: CenterSystem = new CenterSystem();
 

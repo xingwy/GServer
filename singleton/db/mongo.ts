@@ -68,7 +68,7 @@ export class MongoMgr {
      * @param key 键值
      * @param field 字段？ （默认value）
      */
-    public async hget(col: string, key: string, opts: Object = {}): Promise<any> {
+    public async hget(col: string, key: number, opts: Object = {}): Promise<any> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -88,7 +88,7 @@ export class MongoMgr {
      * @param key 键值
      * @param field 字段？ （默认value）
      */
-     public async hgets(col: string, key: string, opts: Object = {}): Promise<any> {
+     public async hgets(col: string, key: number, opts: Object = {}): Promise<any> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -108,7 +108,7 @@ export class MongoMgr {
      * @param col 
      * @param field 
      */
-    public async hset(key: string, value: Buffer, col: string, field: string = "value"): Promise<DeleteWriteOpResultObject | UpdateWriteOpResult | FindAndModifyWriteOpResultObject<any>> {
+    public async hset(col: string, key: number, value: Buffer,  field: string = "value"): Promise<DeleteWriteOpResultObject | UpdateWriteOpResult | FindAndModifyWriteOpResultObject<any>> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -137,7 +137,7 @@ export class MongoMgr {
      * @param key 
      * @returns 
      */
-    public async hdel(col: string, key: string): Promise<DeleteWriteOpResultObject> {
+    public async hdel(col: string, key: number): Promise<DeleteWriteOpResultObject> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -157,7 +157,7 @@ export class MongoMgr {
      * @param key 
      * @returns 
      */
-    public async hdels(col: string, key: string): Promise<DeleteWriteOpResultObject> {
+    public async hdels(col: string, key: number): Promise<DeleteWriteOpResultObject> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -172,13 +172,13 @@ export class MongoMgr {
     }
 
     // to change
-    private async exist(col: string, key: string): Promise<boolean> {
+    private async exist(col: string, key: number): Promise<boolean> {
         let collection = this.getCollection(col);
         if (!collection) {
             return false;
         }
         return await new Promise((resolve: Function, reject: Function) => {
-            collection.indexExists(key, (result) => {
+            collection.indexExists(key.toString(), (result) => {
                 resolve(result);
             })
         })

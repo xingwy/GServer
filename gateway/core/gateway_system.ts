@@ -1,9 +1,9 @@
-import { SystemBase } from "../../singleton/system/system_base";
+import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
 import { GlobelMgr } from "../../singleton/utils/globel";
 
-export class GatewaySystem extends SystemBase {
+export class GatewaySystem extends System {
 
     private static _instance: GatewaySystem = new GatewaySystem();
 

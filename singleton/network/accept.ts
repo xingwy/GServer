@@ -2,7 +2,7 @@ import * as http from "http";
 import * as https from "https";
 import * as net from "net";
 import * as WebSocket from "ws";
-import { SystemBase } from "../system/system_base";
+import { System } from "../core/system";
 import { Session, ServiceSession, ClientSession } from "./session";
 const enum AcceptState {
     connecting,
@@ -16,18 +16,18 @@ const enum AcceptType {
 
 abstract class Accept {
     private _pipe: WebSocket.Server;
-    private _system: SystemBase;
+    private _system: System;
     private _address: net.AddressInfo;
     private _state: AcceptState;
 
-    constructor(system: SystemBase) {
+    constructor(system: System) {
         this._system = system;
     }
 
     public get pipe(): WebSocket.Server {
         return this._pipe;
     }
-    public get system(): SystemBase {
+    public get system(): System {
         return this._system;
     }
     public get address(): net.AddressInfo {
@@ -94,7 +94,7 @@ abstract class Accept {
 
 export class AcceptServer extends Accept {
     private _type: AcceptType;
-    constructor(system: SystemBase) {
+    constructor(system: System) {
         super(system);
         this._type = AcceptType.server;
     }
@@ -117,7 +117,7 @@ export class AcceptServer extends Accept {
 
 export class AcceptClient extends Accept {
     private _type: AcceptType;
-    constructor(system: SystemBase) {
+    constructor(system: System) {
         super(system);
         this._type = AcceptType.client;
     }

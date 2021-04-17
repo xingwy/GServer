@@ -1,6 +1,6 @@
 import { Session } from "../../singleton/network/session";
-import { SystemBase } from "../../singleton/system/system_base";
-import { CenterSystem } from "../base/center_system";
+import { System } from "../../singleton/core/system";
+import { CenterSystem } from "./center_system";
 
 
 // 系统之间消息协议
@@ -8,7 +8,7 @@ import { CenterSystem } from "../base/center_system";
 CenterSystem.instance.registerProtocol(
     Protocols.CenterProtocolCode.AuthUserLogin,
     1,
-    function(this: SystemBase, session: Session, tuple: Protocols.ProtocolsTuple[Protocols.CenterProtocolCode.AuthUserLogin]) {
+    function(this: System, session: Session, tuple: Protocols.ProtocolsTuple[Protocols.CenterProtocolCode.AuthUserLogin]) {
         
     },
 );
