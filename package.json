@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/mongodb": "^3.6.12",
     "@types/msgpack-lite": "^0.1.7",
     "@types/ws": "^7.2.4",
-    "@types/mongodb": "^3.6.12",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
     "https": "^1.0.0",

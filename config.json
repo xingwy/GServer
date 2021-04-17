@@ -9,6 +9,12 @@
         "gateway": {"host": "127.0.0.1", "port": 8001}
     },
     "mongo": {
-        "uri": ""
+        "uri": "mongodb://47.98.146.29:27017",
+        "dbName": "game",
+        "admin": "yu",
+        "passward": "123456",
+        "opts": {
+
+        }
     }
 }
