@@ -14,5 +14,4 @@ class Agent extends IAgent {
     public async toDB<T>(): Promise<T> {
         return null;
     }
-
 } 

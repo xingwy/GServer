@@ -1,6 +1,7 @@
 import { Session, TokenSession, ServiceSession } from "../network/session";
 import { Slots } from "../structs/slots";
 import { Heap } from "../structs/heap";
+import { Proxy } from "../network/proxy";
 import * as Http from "http";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
@@ -23,6 +24,8 @@ export abstract class System {
     protected readonly _tokensHeap: Heap<TokenSession>;
     protected _unique: Uint64;
 
+    protected _httpServer: Proxy;
+
     private readonly _handlers: Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>;
     private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
     private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>;
@@ -34,6 +37,7 @@ export abstract class System {
         this._sessions = new Slots<Session>();
         this._userSessions = new Map<Uint64, Session>();
         this._servicesSession = new Map<Uint8, ServiceSession>();
+        this._httpServer = new Proxy(this);
         // Wait事件 reply token管理
         this._tokens = new Slots<TokenSession>();
         this._tokensHeap = new Heap<TokenSession>((l: TokenSession, r: TokenSession): boolean => (l.value < r.value));
@@ -454,9 +458,9 @@ export abstract class System {
         return this.uniqueToSession.get(unique);
     }
 
-    public open(host: string, port: number): void {
-        
+    public open(host: string, port: number, type: Constants.ConnectType): void {
     }
+
     public close(): void {
 
     }

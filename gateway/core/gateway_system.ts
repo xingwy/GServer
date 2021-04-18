@@ -1,6 +1,7 @@
 import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
+import { Proxy } from "../../singleton/network/proxy";
 import { GlobelMgr } from "../../singleton/utils/globel";
 
 export class GatewaySystem extends System {
@@ -43,7 +44,7 @@ export class GatewaySystem extends System {
     }
 
     public openServer(host: string, port: number): void {
-        this.open(host, port);
+        this.open(host, port, Constants.ConnectType.Tcp);
 
         // 监听 进程通信
         this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
@@ -57,7 +58,7 @@ export class GatewaySystem extends System {
     }
 
     public openClient(host: string, port: number): void {
-        this.open(host, port);
+        this.open(host, port, Constants.ConnectType.Tcp);
         // 监听 客户端连接
         this._clientAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
             session.serviceType = Protocols.ServerType.Client;
@@ -67,5 +68,12 @@ export class GatewaySystem extends System {
             session.open();
             this.openSession(session);
         });
+    }
+
+    public openHttpServer(host: string, port: number): void {
+        this.open(host, port, Constants.ConnectType.Http);
+        this._httpServer.open(host, port, () => {
+            
+        })
     }
 }

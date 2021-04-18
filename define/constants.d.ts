@@ -1,7 +1,7 @@
 /**
  * 常量定义
  */
-declare namespace Constants {
+ declare namespace Constants {
     
     const enum ResultCode {
         Success = 0,     // 成功
@@ -34,5 +34,20 @@ declare namespace Constants {
         Human = "ModuleHuman",
         Bag = "ModuleBag",
     }
+
+    const enum ConnectType {
+        Tcp = 1,
+        Http = 2,
+    }
+
+    const enum AcceptState {
+        connecting,
+        connected,
+        closed,
+    }
+    const enum AcceptType {
+        server = 1,
+        client = 2,
+    } 
 }
 

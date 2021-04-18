@@ -35,13 +35,12 @@ export class CenterSystem extends System {
     }
 
     public open(host: string, port: number): void {
-        super.open(host, port);
+        super.open(host, port, Constants.ConnectType.Tcp);
         // 连接网关
         this._accept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
             session.serviceType = Protocols.ServerType.GatewayServic;
             this._gateSession = session;
             session.open();
-            console.log("连接");
             setInterval(() => {
                 // 向geteway发送消息 拿session
                 this.publishProtocol(this._gateSession, 1, Buffer.from("hello"));

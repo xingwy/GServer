@@ -1,4 +1,4 @@
-import { MgrBase } from "../base/mgr_base";
+import { MgrBase } from "../module_base";
 
 interface IUserInfo {
     account: string;
@@ -25,12 +25,18 @@ export class ModuleUserMgr extends MgrBase {
         return true;
     }
 
+    public existUser(account: string): boolean {
+        if (!this._userMap.has(account)) {
+            return false;
+        }
+        return true;
+    }
+
     public createUser(account: string, password: string, name: string, sex: number): ResultCode {
         // 检查重复账号
         if (!this.checkUser(account)) {
             return ResultCode.Error;
         }
-
         let user: IUserInfo;
         user.account = account;
         user.password = password;

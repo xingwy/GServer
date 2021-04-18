@@ -25,7 +25,21 @@ declare namespace Protocols {
 
     /*************************** Base start ***************************/
     // account password name sex 
-    type CreateUser = [string, string, string, number];
+    enum CreateAndLoginUserFields {
+        account = 0,
+        name = 1,
+        sex = 2,
+    }
+    type CreateAndLoginUser = [string, string, number];
+
+    enum CreateUserFields {
+        account = 0,
+        password = 1,
+        name = 2,
+        sex = 3,
+    }
+    type CreateUser = [string, string, number, number];
+
     type GatewayLoginAuth = [string, string];
 
     type CenterLoginInfo = [];
@@ -35,22 +49,40 @@ declare namespace Protocols {
         [GatewayProtocolCode.CreateUser]: CreateUser,
         [GatewayProtocolCode.AuthUserLogin]: GatewayLoginAuth,
 
-
+        [CenterProtocolCode.CreateAndLoginUser]: CreateAndLoginUser,
         [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
         
     }
 
-    interface RequestTuple {
-        [HttpProtocolPath.Create]: CreateUser,
-        [HttpProtocolPath.Login]: GatewayLoginAuth,
-    }
 
     /*************************** Tuple end ***************************/
 
     /*************************** Http start ***************************/
+
+    enum CreateFields {
+        account = 0,
+        password = 1,
+        name = 2,
+        sex = 3,
+    }
+    type Create = [string, string, string, number];
+
+    enum LoginFields {
+        account = 0,
+        password = 1,
+        name = 2,
+        sex = 3,
+    }
+    type Login = [string, string, string, number];
+
     const enum HttpProtocolPath {
         Create = "/user/create",
         Login = "/user/login",
+    }
+
+    interface RequestTuple {
+        [HttpProtocolPath.Create]: Create,
+        [HttpProtocolPath.Login]: Login,
     }
     /*************************** Http end ***************************/
 
@@ -58,12 +90,13 @@ declare namespace Protocols {
     /*************************** Code start ***************************/
     const enum GatewayProtocolCode {
         Base = 0x100000,                 // 起始段
-        CreateUser = 0x200001,           // 创建角色
-        AuthUserLogin = 0x100001,        // 网关登录
+        CreateUser = 0x100001,           // 创建角色
+        AuthUserLogin = 0x100002,        // 网关登录
     }
     
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
+        CreateAndLoginUser = 0x200001,   // 创建角色 
         AuthUserLogin = 0x200002,        // 验证角色登录
         Max = 0x2fffff,
     }

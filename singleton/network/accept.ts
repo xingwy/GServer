@@ -4,21 +4,13 @@ import * as net from "net";
 import * as WebSocket from "ws";
 import { System } from "../core/system";
 import { Session, ServiceSession, ClientSession } from "./session";
-const enum AcceptState {
-    connecting,
-    connected,
-    closed,
-}
-const enum AcceptType {
-    server = 1,
-    client = 2,
-} 
+
 
 abstract class Accept {
     private _pipe: WebSocket.Server;
     private _system: System;
     private _address: net.AddressInfo;
-    private _state: AcceptState;
+    private _state: Constants.AcceptState;
 
     constructor(system: System) {
         this._system = system;
@@ -33,7 +25,7 @@ abstract class Accept {
     public get address(): net.AddressInfo {
         return this._address;
     }
-    public get state(): AcceptState {
+    public get state(): Constants.AcceptState {
         return this._state;
     }
 
@@ -41,7 +33,7 @@ abstract class Accept {
         let session;
         if (operate === Protocols.AcceptOperate.active) {
             // 连接模式
-            this._state = AcceptState.connecting;
+            this._state = Constants.AcceptState.connecting;
             this._address = {address: host, port, family: ""};
             let pipe: WebSocket;
             if (flag) {
@@ -93,13 +85,13 @@ abstract class Accept {
 }
 
 export class AcceptServer extends Accept {
-    private _type: AcceptType;
+    private _type: Constants.AcceptType;
     constructor(system: System) {
         super(system);
-        this._type = AcceptType.server;
+        this._type = Constants.AcceptType.server;
     }
 
-    public get type(): AcceptType {
+    public get type(): Constants.AcceptType {
         return this._type;
     }
     protected onOpen(socket: WebSocket): Session {
@@ -112,17 +104,16 @@ export class AcceptServer extends Accept {
     }
     protected onError(error: Error): void {
     }
-    
 }
 
 export class AcceptClient extends Accept {
-    private _type: AcceptType;
+    private _type: Constants.AcceptType;
     constructor(system: System) {
         super(system);
-        this._type = AcceptType.client;
+        this._type = Constants.AcceptType.client;
     }
 
-    public get type(): AcceptType {
+    public get type(): Constants.AcceptType {
         return this._type;
     }
     protected onOpen(socket: WebSocket): Session {
@@ -135,5 +126,5 @@ export class AcceptClient extends Accept {
     }
     protected onError(error: Error): void {
     }
-    
 }
+

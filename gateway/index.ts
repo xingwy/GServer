@@ -11,6 +11,10 @@ export const Main = async function(core: string) {
     GatewaySystem.instance.openServer(gate.host, gate.port);
     GatewaySystem.instance.openClient(client.host, client.port);
 
+    let gateHttp = CFG.http.gateway;
+    // 开启http服务
+    GatewaySystem.instance.openHttpServer(gateHttp.host, gateHttp.port);
+
     // 初始化DB
     let uri = CFG.mongo.uri;
     let dbName = CFG.mongo.dbName;
