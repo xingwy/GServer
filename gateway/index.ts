@@ -1,5 +1,6 @@
 import { GatewaySystem } from "./core/gateway_system";
 import { MongoMgr } from "../singleton/db/mongo";
+import * as SystemMgr from "./core/system_mgr";
 
 const CFG = require("../config.json");
 
@@ -21,6 +22,9 @@ export const Main = async function(core: string) {
     let dbOpts = CFG.mongo.opts;
     MongoMgr.instance.init(uri, dbName, dbOpts);
     await MongoMgr.instance.connect();
+
+    // 协议注册
+    SystemMgr.init();
 
     // 进程事件处理
     process.on("exit", async (code) => {

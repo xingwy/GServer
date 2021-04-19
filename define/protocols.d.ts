@@ -54,7 +54,6 @@ declare namespace Protocols {
         
     }
 
-
     /*************************** Tuple end ***************************/
 
     /*************************** Http start ***************************/
@@ -76,6 +75,7 @@ declare namespace Protocols {
     type Login = [string, string, string, number];
 
     const enum HttpProtocolPath {
+        CreateAccount = "/user/createAccount",
         Create = "/user/create",
         Login = "/user/login",
     }
@@ -100,7 +100,10 @@ declare namespace Protocols {
         AuthUserLogin = 0x200002,        // 验证角色登录
         Max = 0x2fffff,
     }
-    const ProtocolsCodeMax = 0xF00000;
+
+    const enum ProtocolCode {
+        ProtocolsCodeMax = 0xF00000,      
+    }
     /*************************** Code end ***************************/
 
     const enum AcceptOperate {

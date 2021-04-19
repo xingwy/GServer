@@ -29,7 +29,7 @@ export class MongoMgr {
     }
     
     // 初始化配置
-    public init(uri: string, dbName: string, opts: Object = {}): void {
+    public init(uri: string, dbName: string, opts: Object = { useUnifiedTopology: true }): void {
         this._opts = opts;
         this._dbUri = uri;
         this._dbName = dbName;

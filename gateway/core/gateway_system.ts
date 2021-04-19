@@ -39,7 +39,6 @@ export class GatewaySystem extends System {
     }
     public async close(): Promise<void> {
         super.close();
-        console.log("gateway 退出");
         process.exit(0);
     }
 
@@ -71,9 +70,10 @@ export class GatewaySystem extends System {
     }
 
     public openHttpServer(host: string, port: number): void {
-        this.open(host, port, Constants.ConnectType.Http);
+        console.log("http")
         this._httpServer.open(host, port, () => {
-            
+            console.log(`open http port: ${host}: ${port}`)
+            this.open(host, port, Constants.ConnectType.Http);
         })
     }
 }

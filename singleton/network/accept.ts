@@ -61,13 +61,11 @@ abstract class Accept {
             }
 
             this._pipe.on("listening", () => {
-                console.log("监听中");
                 this.onListening();
             });
 
             this.pipe.on("connection", (socket: WebSocket, request: http.IncomingMessage) => {
                 session = this.onConnection(socket, request);
-                socket.send("weqwe");
                 callback(session);
             });
 

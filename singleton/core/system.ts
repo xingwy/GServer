@@ -28,7 +28,7 @@ export abstract class System {
 
     private readonly _handlers: Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>;
     private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
-    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>;
+    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Protocols.RequestType}>;
     constructor(serverType: Protocols.ServerType) {
 
         this._serverType = serverType;
@@ -44,7 +44,7 @@ export abstract class System {
         // 事件管理
         this._handlers = new Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>();
         this._waitHandlers = new Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
-        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: System, res: Http.ClientRequest, tuple: any) => void, type: Protocols.RequestType}>();
+        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Protocols.RequestType}>();
     }
 
     public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
@@ -59,13 +59,13 @@ export abstract class System {
      * @param handler 处理
      * @returns 
      */
-    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: System, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]) => void) {
+    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: System, query: Object, params: Object) => Object) {
         if (this._requestHandlers.has(path)) {
             // TODO_LOG
             return;
         }
-        let exec = async function(this: System, res: Http.ClientRequest, tuple: Protocols.RequestTuple[T]): Promise<void> {
-            await handler.call(this, res, tuple);
+        let exec = async function(this: System, query: Object, params: Object): Promise<Object> {
+            return await handler.call(this, query, params);
         };
 
         // 映射表
@@ -85,7 +85,7 @@ export abstract class System {
         if (this._handlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Protocols.ProtocolsCodeMax;
+        let type = opcode & Protocols.ProtocolCode.ProtocolsCodeMax;
         if (this.serverType !== type) {
             //  TODO_LOG 服务类型不一致
         }
@@ -108,7 +108,7 @@ export abstract class System {
         if (this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Protocols.ProtocolsCodeMax;
+        let type = opcode & Protocols.ProtocolCode.ProtocolsCodeMax;
         if (this.serverType !== type) {
             // TODO_LOG
         }
@@ -120,6 +120,22 @@ export abstract class System {
             sign,
             exec,
         });
+    }
+
+    // 采用JSON
+    public async handleRequest(path: Protocols.HttpProtocolPath, methon: Protocols.RequestType, query: Object = {}, params: Object = {}): Promise<Object> {
+        console.log(this._requestHandlers.keys())
+        if (!this._requestHandlers.has(path)) {
+            return null;
+        }
+        console.log(query)
+        console.log(params)
+        let handler = this._requestHandlers.get(path);
+        if (handler.type != methon) {
+            return null;
+        }
+        let reply = await handler.exec.call(this, query, params);
+        return reply;
     }
 
     /**
