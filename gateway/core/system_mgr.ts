@@ -2,8 +2,8 @@ import { GatewaySystem } from "./gateway_system";
 import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { ModuleUserMgr } from "../modules/module_user_mgr/module_user_mgr";
-import * as Http from "http";
 export function init () {
+    // 验证登录  大概为 gateway => center(拿数据) => gateway => client
     GatewaySystem.instance.registerProtocol(
         Protocols.GatewayProtocolCode.AuthUserLogin,
         Protocols.SignType.Auth,
@@ -11,6 +11,7 @@ export function init () {
             let account = tuple[0];
             let password = tuple[1];
             let result = ModuleUserMgr.instance.authUser(account, password);
+            
             
         },
     );

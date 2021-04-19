@@ -25,11 +25,6 @@
         Data2 = 0x000002,
     }
 
-    const enum MongoDBKey {
-        Human = "Human",
-        Bag = "Bag",
-    }
-
     const enum ModuleName {
         Human = "ModuleHuman",
         Bag = "ModuleBag",
@@ -49,5 +44,33 @@
         server = 1,
         client = 2,
     } 
+
+
+    /*************************** DB fields start ***************************/
+    enum AccountFields {
+        account = 0, // 账号
+        uid = 1, // 用户唯一ID
+    }
+    type Account = [string, number];
+
+    enum AccountsFields {
+        list = 0, // 列表
+    }
+    type Accounts = [Array<Account>];
+
+
+    const enum MongoDBKey {
+        Accounts = "Accounts",
+        Human = "Human",
+        Bag = "Bag",
+    }
+
+
+    // 注册DB值类型
+    interface DBFieldsType {
+        [MongoDBKey.Accounts]: Accounts,
+    }
+
+    /***************************  DB fields end  ***************************/
 }
 

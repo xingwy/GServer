@@ -43,7 +43,7 @@ function buildFixedData(content: Buffer): [number, number, number, number, numbe
 }
 
 async function main() {
-    let session = new WebSocket(`ws://127.0.0.1:10002`);
+    let session = new WebSocket(`ws://127.0.0.1:10001`);
 
     session.onopen = (s) => {
         // console.log(s);
