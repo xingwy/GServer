@@ -47,28 +47,31 @@
 
 
     /*************************** DB fields start ***************************/
-    enum AccountFields {
+    const enum AccountFields {
         account = 0, // 账号
         uid = 1, // 用户唯一ID
     }
     type Account = [string, number];
 
-    enum AccountsFields {
+    const enum AccountsFields {
         list = 0, // 列表
     }
     type Accounts = [Array<Account>];
 
+    const enum ModuleMgrName {
+        AccountMgr = "AccountMgr",
+    }
 
     const enum MongoDBKey {
-        Accounts = "Accounts",
-        Human = "Human",
+        AccountMgr = "AccountMgr",
+        Human = "HumanMgr",
         Bag = "Bag",
     }
 
 
     // 注册DB值类型
     interface DBFieldsType {
-        [MongoDBKey.Accounts]: Accounts,
+        [MongoDBKey.AccountMgr]: Accounts,
     }
 
     /***************************  DB fields end  ***************************/

@@ -1,11 +1,11 @@
-import { GatewaySystem } from "./core/gateway_system";
 import { MongoMgr } from "../singleton/db/mongo";
-import * as SystemMgr from "./core/system_mgr";
+import { GatewaySystem } from "./core/gateway_system";
+import { ModuleSystem } from "./core/module_system";
 
 const CFG = require("../config.json");
 
 export const Main = async function(core: string) {
-    // 初始化中心系统
+    // 初始化中心系统cd b   
     let gate = CFG.tcp.gateway;
     let client = CFG.tcp.client;
     // 开启网关连接  提供服务进程连接
@@ -23,8 +23,8 @@ export const Main = async function(core: string) {
     MongoMgr.instance.init(uri, dbName, dbOpts);
     await MongoMgr.instance.connect();
 
-    // 协议注册
-    SystemMgr.init();
+    // 管理器启动
+    await ModuleSystem.instance.init();
 
     // 进程事件处理
     process.on("exit", async (code) => {
@@ -34,16 +34,17 @@ export const Main = async function(core: string) {
 
     process.on("uncaughtException", async (e) => {
         console.log("uncaughtException", e);
-        await GatewaySystem.instance.close();
     });
 
     process.on("SIGINT", async () => {
         console.log("SIGINT");
+        await ModuleSystem.instance.close();
         await GatewaySystem.instance.close();
     });
 
     process.on("SIGTERM", async () => {
         console.log("SIGTERM");
+        await ModuleSystem.instance.close();
         await GatewaySystem.instance.close();
     });
 };

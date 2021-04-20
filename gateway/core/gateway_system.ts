@@ -39,6 +39,7 @@ export class GatewaySystem extends System {
     }
     public async close(): Promise<void> {
         super.close();
+        
         process.exit(0);
     }
 

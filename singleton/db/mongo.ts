@@ -1,5 +1,5 @@
 import { MongoClient, Db, Collection, DeleteWriteOpResultObject, UpdateWriteOpResult, FindAndModifyWriteOpResultObject } from 'mongodb';
-
+import { Encoding} from "../../singleton/io/msgpack";
 export class MongoMgr {
     private static _instance: MongoMgr = new MongoMgr();
     public static get instance(): MongoMgr {
@@ -68,14 +68,15 @@ export class MongoMgr {
      * @param key 键值
      * @param field 字段？ （默认value）
      */
-    public async hget(col: string, key: number, opts: Object = {}): Promise<any> {
+    public async hget(col: string, key: number | string, opts: Object = {}): Promise<any> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
                 // 创建集合
                 return null;
             }
-            return await collection.findOne(Object.assign(opts,{key}));
+            let data = await collection.findOne(Object.assign(opts,{key}));
+            return Encoding.instance.decode(data.value);
         } catch (error) {
             // LOG
         }
@@ -88,7 +89,7 @@ export class MongoMgr {
      * @param key 键值
      * @param field 字段？ （默认value）
      */
-     public async hgets(col: string, key: number, opts: Object = {}): Promise<any> {
+     public async hgets(col: string, key: number | string, opts: Object = {}): Promise<any> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -108,7 +109,7 @@ export class MongoMgr {
      * @param col 
      * @param field 
      */
-    public async hset(col: string, key: number, value: Buffer,  field: string = "value"): Promise<DeleteWriteOpResultObject | UpdateWriteOpResult | FindAndModifyWriteOpResultObject<any>> {
+    public async hset(col: string, key: number | string, value: any,  field: string = "value"): Promise<DeleteWriteOpResultObject | UpdateWriteOpResult | FindAndModifyWriteOpResultObject<any>> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -116,16 +117,18 @@ export class MongoMgr {
                 collection = this.createCollection(col);
             }
             // collection.in
-            let exist = this.exist(col, key);
+            let exist = await this.exist(col, key);
+            let data = Encoding.instance.encode(value);
             if (!exist) {
                 // 插入
-                return await collection.insertOne({key, [field]: value})
+                return await collection.insertOne({key, [field]: data})
             } else {
                 // 修改
-                return await collection.findOneAndUpdate({key}, {[field]: value});
+                return await collection.findOneAndUpdate({key}, {[field]: data});
             }
         } catch (error) {
             // LOG
+            console.log(`hset error`, error);
         }
         return null;
         
@@ -137,7 +140,7 @@ export class MongoMgr {
      * @param key 
      * @returns 
      */
-    public async hdel(col: string, key: number): Promise<DeleteWriteOpResultObject> {
+    public async hdel(col: string, key: number | string): Promise<DeleteWriteOpResultObject> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -157,7 +160,7 @@ export class MongoMgr {
      * @param key 
      * @returns 
      */
-    public async hdels(col: string, key: number): Promise<DeleteWriteOpResultObject> {
+    public async hdels(col: string, key: number | string): Promise<DeleteWriteOpResultObject> {
         try {
             let collection = this.getCollection(col);
             if (!collection) {
@@ -172,13 +175,13 @@ export class MongoMgr {
     }
 
     // to change
-    private async exist(col: string, key: number): Promise<boolean> {
+    private async exist(col: string, key: number | string): Promise<boolean> {
         let collection = this.getCollection(col);
         if (!collection) {
             return false;
         }
         return await new Promise((resolve: Function, reject: Function) => {
-            collection.indexExists(key.toString(), (result) => {
+            collection.findOne({key: key.toString()}, (result) => {
                 resolve(result);
             })
         })
