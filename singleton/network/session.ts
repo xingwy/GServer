@@ -44,7 +44,6 @@ export abstract class Session {
         this.sign = 0x01;
         this._socket = socket;
         this._system = system;
-
         if (request) {
             this._address = request.socket.remoteAddress;
             this._port = request.socket.remotePort;   
@@ -158,7 +157,8 @@ export class ServiceSession extends Session {
                 return;
             }
             let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
-            this._system.receiveProtocol(from, to, opcode, from, tuple);
+            console.log([from, to, opcode, flag, tuple])
+            this._system.receiveProtocol(from, to, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }
@@ -205,7 +205,7 @@ export class ServiceSession extends Session {
         offset += 4;
         buffer.writeDoubleLE(from, offset);
         offset += 8;
-        buffer.writeDoubleLE(this.unique);
+        buffer.writeDoubleLE(this.unique, offset);
         offset += 8;
         buffer.writeInt32LE(opcode, offset);
         offset += 4;
@@ -220,11 +220,73 @@ export class ServiceSession extends Session {
 
 export class ClientSession extends Session {
     public onSocketMessage(event: WebSocket.MessageEvent): void {
-        // TODO 客户端消息的处理
+        let content = <Buffer> event.data;
+        // 增加接收处理分发
+        try {
+            if (content.length < FIXED_BUFFER) {
+                console.log("数据长度不足");
+                return;
+            }
+            let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
+            
+            this._system.receiveProtocol(this.unique, to, opcode, flag, tuple);
+        } catch (error) {
+            console.log(error);
+        }
     }
-    public async receive(from: number, opcode: number, flag: number, content: Buffer): Promise<ResultCode> {
-        // 客户端消息发送
+
+    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<ResultCode> {
+        // TODO 发送检查
+        try {
+            console.log([from, opcode, flag, content])
+            let buffer = this.setFixedData(from, opcode, flag, content);
+            this._socket.send(buffer);
+        } catch (error) {
+            console.log(error);
+            return ResultCode.Error;
+        }
         return ResultCode.Success;
+    }
+
+    public buildFixedData(content: Buffer): [number, number, number, number, Buffer] {
+        let offset = 0;
+        let size = content.readUInt32LE(offset);
+        offset += 4;
+        if (size !== content.length) {
+            // 校验数据长度
+            console.log("消息长度不足");
+            throw(new Error("消息长度不足"));
+        }
+        let from = content.readDoubleLE(offset);
+        offset += 8;
+        let to = content.readDoubleLE(offset);
+        offset += 8;
+        let opcode = content.readUInt32LE(offset);
+        offset += 4;
+        let flag = content.readUInt8(offset);
+        offset += 1;
+        let tuple = content.slice(offset);
+        return [from, to, opcode, flag, tuple];
+    }
+    
+    public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
+        let size = content && content.length || 0;
+        let buffer = Buffer.allocUnsafe(FIXED_BUFFER + size);
+        let offset = 0;
+        buffer.writeUInt32LE(<Uint32> (buffer.byteLength), offset);
+        offset += 4;
+        buffer.writeDoubleLE(from, offset);
+        offset += 8;
+        buffer.writeDoubleLE(this.unique, offset);
+        offset += 8;
+        buffer.writeInt32LE(opcode, offset);
+        offset += 4;
+        buffer.writeUInt8(flag, offset);
+        offset += 1;
+        if (content) {
+            content.copy(buffer, offset);
+        }
+        return buffer;
     }
     
 }

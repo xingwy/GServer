@@ -3,6 +3,8 @@ import { GatewaySystem } from "./core/gateway_system";
 import { ModuleSystem } from "./core/module_system";
 
 const CFG = require("../config.json");
+// 注册协议
+require("./core/protocol_system");
 
 export const Main = async function(core: string) {
     // 初始化中心系统cd b   

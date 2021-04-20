@@ -71,8 +71,7 @@ export class GatewaySystem extends System {
     }
 
     public openHttpServer(host: string, port: number): void {
-        console.log("http")
-        this._httpServer.open(host, port, () => {
+-        this._httpServer.open(host, port, () => {
             console.log(`open http port: ${host}: ${port}`)
             this.open(host, port, Constants.ConnectType.Http);
         })

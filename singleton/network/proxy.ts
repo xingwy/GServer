@@ -36,7 +36,6 @@ export class Proxy {
             let u = new url.URL(req.url, `http://${this.address.address}:${this.address.port}/`);
             let path = u.pathname;
             let query = u.searchParams;
-            console.log(req.method)
             if (req.method == "GET") {
                 // 路由分发 TODO 调用系统分发器
                 let result = await this.system.handleRequest(path as Protocols.HttpProtocolPath, Protocols.RequestType.Get, query);

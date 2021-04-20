@@ -40,6 +40,11 @@ declare namespace Protocols {
     }
     type CreateUser = [string, string, number, number];
 
+    // 官网验证登陆
+    const enum GatewayLoginAuthFiends {
+        account = 0,
+        password = 1,
+    }
     type GatewayLoginAuth = [string, string];
 
     type CenterLoginInfo = [];
@@ -47,7 +52,7 @@ declare namespace Protocols {
     /*************************** Tuple start ***************************/
     interface ProtocolsTuple {
         [GatewayProtocolCode.CreateUser]: CreateUser,
-        [GatewayProtocolCode.AuthUserLogin]: GatewayLoginAuth,
+        [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth,
 
         [CenterProtocolCode.CreateAndLoginUser]: CreateAndLoginUser,
         [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
@@ -91,7 +96,7 @@ declare namespace Protocols {
     const enum GatewayProtocolCode {
         Base = 0x100000,                 // 起始段
         CreateUser = 0x100001,           // 创建角色
-        AuthUserLogin = 0x100002,        // 网关登录
+        GatewayAuthLogin = 0x100002,        // 网关登录
     }
     
     const enum CenterProtocolCode {

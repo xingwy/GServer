@@ -22,7 +22,7 @@ export abstract class System {
 
     protected readonly _tokens: Slots<TokenSession>;
     protected readonly _tokensHeap: Heap<TokenSession>;
-    protected _unique: Uint64;
+    protected _unique: Uint64 = 0;
 
     protected _httpServer: Proxy;
 
@@ -124,12 +124,9 @@ export abstract class System {
 
     // 采用JSON
     public async handleRequest(path: Protocols.HttpProtocolPath, methon: Protocols.RequestType, query: Object = {}, params: Object = {}): Promise<Object> {
-        console.log(this._requestHandlers.keys())
         if (!this._requestHandlers.has(path)) {
             return null;
         }
-        console.log(query)
-        console.log(params)
         let handler = this._requestHandlers.get(path);
         if (handler.type != methon) {
             return null;
@@ -153,7 +150,8 @@ export abstract class System {
         let handler = this._handlers.get(opcode);
         if (!(handler.sign & from.sign)) {
             if (opcode === 0x000001) {
-                // ping网络操作
+                // ping网络操作 
+                console.log("ping message")
                 return;
             }
         }
@@ -249,11 +247,9 @@ export abstract class System {
         if (session === null) {
             return;
         }
-
         if (!this.onReceiveProtocol(from, opcode, flags, content)) {
             // TODO 关闭session
         }
-
         switch (flags) {
             case Protocols.MessageType.Push: {
                 this.handleProtocol(session, opcode, content);
@@ -293,7 +289,7 @@ export abstract class System {
         let content: Buffer;
         if (data) {
             try {
-                content = Buffer.from(MsgpackLite.encode(data));
+                content = MsgpackLite.encode(data);
             } catch (error) {
                 console.log(error);
                 return;
@@ -322,7 +318,7 @@ export abstract class System {
         let content: Buffer;
         if (data) {
             try {
-                content = Buffer.from(MsgpackLite.encode(data));
+                content = MsgpackLite.encode(data);
             } catch (error) {
                 console.log(error);
                 return;
@@ -400,7 +396,7 @@ export abstract class System {
 
     public closeSession(handle: Uint32, reason: ResultCode): void {
         let session = this._sessions.get(handle);
-        if (session) {
+        if (!session) {
             return;
         }
         switch (session.serviceType) {
@@ -428,7 +424,7 @@ export abstract class System {
                 }
                 break;
             }
-            case Protocols.ServerType.SystemServic: {
+            case Protocols.ServerType.Client: {
                 if (this._userSessions.has(session.unique)) {
                     this._userSessions.delete(session.unique);
                 }

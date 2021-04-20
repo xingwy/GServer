@@ -9,7 +9,6 @@
   "author": "xingwy",
   "license": "ISC",
   "dependencies": {
-    "@types/bl": "^5.0.0",
     "@types/mongodb": "^3.6.12",
     "@types/msgpack-lite": "^0.1.7",
     "@types/msgpack5": "^3.4.1",
@@ -25,6 +24,7 @@
     "ws": "^7.2.5"
   },
   "devDependencies": {
+    "@types/bl": "^5.0.0",
     "@types/mongodb": "^3.6.12",
     "@types/node": "^13.13.50"
   }

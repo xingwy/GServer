@@ -1,4 +1,6 @@
 import * as WebSocket from "ws";
+import { Encoding } from "../singleton/io/msgpack";
+import * as MsgpackLite from "msgpack-lite";
 
 const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
 function setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
@@ -53,17 +55,18 @@ async function main() {
         console.log(error);
     };
 
-    session.onmessage = (data) => {
-        // console.log();
+    session.onmessage = (event) => {
+        console.log(event.data);
     };
 
     session.onclose = () => {
         console.log("close");
     };
-    let content = Buffer.from("hello");
+    let content = MsgpackLite.encode(["xingwy", "123456"]);
     
     setInterval(() => {
-        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.CreateUser, 1, content);
+        console.log("send")
+        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.GatewayAuthLogin, 1, content);
         session.send(buffer);
     },          5000);
     
