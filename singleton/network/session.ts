@@ -227,7 +227,7 @@ export class ClientSession extends Session {
                 console.log("数据长度不足");
                 return;
             }
-            let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
+            let [to, opcode, flag, tuple] = this.buildFixedData(content);
             
             this._system.receiveProtocol(this.unique, to, opcode, flag, tuple);
         } catch (error) {
@@ -248,7 +248,7 @@ export class ClientSession extends Session {
         return ResultCode.Success;
     }
 
-    public buildFixedData(content: Buffer): [number, number, number, number, Buffer] {
+    public buildFixedData(content: Buffer): [number, number, number, Buffer] {
         let offset = 0;
         let size = content.readUInt32LE(offset);
         offset += 4;
@@ -259,14 +259,14 @@ export class ClientSession extends Session {
         }
         let from = content.readDoubleLE(offset);
         offset += 8;
-        let to = content.readDoubleLE(offset);
-        offset += 8;
+        // let to = content.readDoubleLE(offset);
+        // offset += 8;
         let opcode = content.readUInt32LE(offset);
         offset += 4;
         let flag = content.readUInt8(offset);
         offset += 1;
         let tuple = content.slice(offset);
-        return [from, to, opcode, flag, tuple];
+        return [from, opcode, flag, tuple];
     }
     
     public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {

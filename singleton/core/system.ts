@@ -364,6 +364,7 @@ export abstract class System {
     public openSession(session: Session): Uint16 {
         session.handle = this._sessions.alloc(session);
         this.uniqueToSession.set(session.unique, session);
+
         switch (session.serviceType) {
             case Protocols.ServerType.CenterServic: {
                 this._servicesSession.set(session.unique, <ServiceSession> session);
@@ -390,7 +391,6 @@ export abstract class System {
                 break; 
         }
         this.onSessionOpen(session);
-
         return session.handle;
     }
 

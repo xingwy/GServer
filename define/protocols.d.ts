@@ -13,8 +13,9 @@ declare namespace Protocols {
     }
 
     const enum SignType {
-        Ping = 1,
-        Auth = 2,
+        Ping = 1,    // 心跳消息
+        Auth = 2,    // 验证消息
+        Data = 3,    // 数据消息
 
     }
     const enum MessageType {
