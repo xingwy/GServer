@@ -20,7 +20,7 @@ export class GatewaySystem extends System {
     }
     
     constructor() {
-        super(Protocols.ServerType.CenterServic);
+        super(Protocols.ServicType.CenterServic);
         this._serverAccept = new AcceptServer(this);
         this._clientAccept = new AcceptClient(this);
         this._clients = new Map<Uint64, Session>();
@@ -49,9 +49,9 @@ export class GatewaySystem extends System {
 
         // 监听 进程通信
         this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
-            session.serviceType = Protocols.ServerType.GatewayServic;
             // 开启启用随机ID
             session.unique = GlobelMgr.instance.nextId();
+            // 获取类型 connenction传过来
             // 创建连接 加入事件处理
             session.open();
             this.openSession(session);
@@ -62,7 +62,7 @@ export class GatewaySystem extends System {
         this.open(host, port, Constants.ConnectType.Tcp);
         // 监听 客户端连接
         this._clientAccept.open(host, port, Protocols.AcceptOperate.passive, false, async (session: Session): Promise<void> => {
-            session.serviceType = Protocols.ServerType.Client;
+            session.serviceType = Protocols.ServicType.Client;
             // TODO 采用用户ID 登陆时加入map
             let {code, unique} = await LoginAction.instance.login();
             if (code != Constants.ResultCode.Success) {

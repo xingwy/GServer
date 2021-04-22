@@ -13,7 +13,7 @@ export class CenterSystem extends System {
     }
     
     constructor() {
-        super(Protocols.ServerType.CenterServic);
+        super(Protocols.ServicType.CenterServic);
         this._accept = new AcceptServer(this);
     }
     public onReceiveProtocol(from: number, code: number, flags: number, content: Buffer): boolean {
@@ -38,11 +38,11 @@ export class CenterSystem extends System {
         super.open(host, port, Constants.ConnectType.Tcp);
         // 连接网关
         this._accept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Protocols.ServerType.GatewayServic;
+            session.serviceType = Protocols.ServicType.GatewayServic;
             this._gateSession = session;
-            session.open();
             setInterval(() => {
                 // 向geteway发送消息 拿session
+                console.log('hello')
                 this.publishProtocol(this._gateSession, 1, Buffer.from("hello"));
             },          5000);
             

@@ -4,9 +4,8 @@ const CFG = require("../config.json");
 
 export const Main = async function(core: string) {
     // 初始化中心系统
-    let gate = CFG.address.gateway;
+    let gate = CFG.tcp.gateway;
     CenterSystem.instance.open(gate.host, gate.port);
-
 
     // 进程事件处理
     process.on("exit", async () => {

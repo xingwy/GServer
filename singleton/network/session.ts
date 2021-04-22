@@ -1,8 +1,11 @@
+import * as url from "url"
 import * as http from "http";
 import * as WebSocket from "ws";
+import { IAgent } from "../core/IAgent";
 import { System } from "../core/system";
 
-const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
+const SERVER_FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
+const CLIENT_FIXED_BUFFER = 4 + 4 + 1;
 
 export class TokenSession  implements IHeapElement {
     public value: number;
@@ -30,7 +33,7 @@ export abstract class Session {
     public sign: Uint8;
     public handle: Uint32;
     public unique: Uint64;
-    public serviceType: Protocols.ServerType;
+    public serviceType: Protocols.ServicType;
 
     public readonly TIMEOUT: number = 180000;
 
@@ -40,13 +43,18 @@ export abstract class Session {
     protected _system: System;
 
     constructor(system: System, socket: WebSocket, request: http.IncomingMessage) {
-
-        this.sign = 0x01;
+        this.sign = 0xff;
         this._socket = socket;
         this._system = system;
         if (request) {
             this._address = request.socket.remoteAddress;
             this._port = request.socket.remotePort;   
+            let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
+            let query = Object.assign({servicType: 0}, u.searchParams);
+            let servicType = query.servicType;
+            if (servicType) {
+                this.serviceType = servicType;
+            }
         }
 
     }
@@ -143,6 +151,7 @@ export abstract class Session {
 
 export class ServiceSession extends Session {
 
+    // 多服务
     public readonly userSession: Set<Session>;
     constructor(system: System, socket: WebSocket, request: http.IncomingMessage) {
         super(system, socket, request);
@@ -152,7 +161,7 @@ export class ServiceSession extends Session {
         let content = <Buffer> event.data;
         // 增加接收处理分发
         try {
-            if (content.length < FIXED_BUFFER) {
+            if (content.length < SERVER_FIXED_BUFFER) {
                 console.log("数据长度不足");
                 return;
             }
@@ -199,7 +208,7 @@ export class ServiceSession extends Session {
     
     public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
         let size = content && content.length || 0;
-        let buffer = Buffer.allocUnsafe(FIXED_BUFFER + size);
+        let buffer = Buffer.allocUnsafe(SERVER_FIXED_BUFFER + size);
         let offset = 0;
         buffer.writeUInt32LE(<Uint32> (buffer.byteLength), offset);
         offset += 4;
@@ -219,17 +228,24 @@ export class ServiceSession extends Session {
 } 
 
 export class ClientSession extends Session {
+    private _agent: IAgent;
+    public get agent(): IAgent {
+        return this._agent;
+    }
+    public set agent(agent: IAgent) {
+        this._agent = agent;
+    }
     public onSocketMessage(event: WebSocket.MessageEvent): void {
         let content = <Buffer> event.data;
         // 增加接收处理分发
         try {
-            if (content.length < FIXED_BUFFER) {
+            if (content.length < CLIENT_FIXED_BUFFER) {
                 console.log("数据长度不足");
                 return;
             }
-            let [to, opcode, flag, tuple] = this.buildFixedData(content);
+            let [opcode, flag, tuple] = this.buildFixedData(content);
             
-            this._system.receiveProtocol(this.unique, to, opcode, flag, tuple);
+            this._system.receiveProtocol(this.handle, 0, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }
@@ -248,7 +264,7 @@ export class ClientSession extends Session {
         return ResultCode.Success;
     }
 
-    public buildFixedData(content: Buffer): [number, number, number, Buffer] {
+    public buildFixedData(content: Buffer): [number, number, Buffer] {
         let offset = 0;
         let size = content.readUInt32LE(offset);
         offset += 4;
@@ -257,28 +273,20 @@ export class ClientSession extends Session {
             console.log("消息长度不足");
             throw(new Error("消息长度不足"));
         }
-        let from = content.readDoubleLE(offset);
-        offset += 8;
-        // let to = content.readDoubleLE(offset);
-        // offset += 8;
         let opcode = content.readUInt32LE(offset);
         offset += 4;
         let flag = content.readUInt8(offset);
         offset += 1;
         let tuple = content.slice(offset);
-        return [from, opcode, flag, tuple];
+        return [opcode, flag, tuple];
     }
     
     public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
         let size = content && content.length || 0;
-        let buffer = Buffer.allocUnsafe(FIXED_BUFFER + size);
+        let buffer = Buffer.allocUnsafe(CLIENT_FIXED_BUFFER + size);
         let offset = 0;
         buffer.writeUInt32LE(<Uint32> (buffer.byteLength), offset);
         offset += 4;
-        buffer.writeDoubleLE(from, offset);
-        offset += 8;
-        buffer.writeDoubleLE(this.unique, offset);
-        offset += 8;
         buffer.writeInt32LE(opcode, offset);
         offset += 4;
         buffer.writeUInt8(flag, offset);

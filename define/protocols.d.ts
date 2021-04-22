@@ -4,7 +4,7 @@
 declare namespace Protocols {
 
     /*************************** Base start ***************************/
-    const enum ServerType {
+    const enum ServicType {
         GatewayServic = 0x100000,   // 网关服务
         CenterServic = 0x200000,    // 中心服务
         FeatureServic = 0x300000,   // 功能服务
@@ -13,10 +13,9 @@ declare namespace Protocols {
     }
 
     const enum SignType {
-        Ping = 1,    // 心跳消息
-        Auth = 2,    // 验证消息
-        Data = 3,    // 数据消息
-
+        Ping = 0x01,    // 心跳消息
+        Auth = 0x02,    // 验证消息
+        Data = 0x04,    // 数据消息
     }
     const enum MessageType {
         Push = 0x01,   // 推送
