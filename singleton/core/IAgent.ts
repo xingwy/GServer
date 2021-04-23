@@ -1,6 +1,8 @@
 // 人物模块
+import { Event } from "../structs/event";
 
-export abstract class IAgent {
+// 自身带触发器 供自身角色事件使用
+export abstract class IAgent extends Event {
     private _agentId: number;
 
     public set agentId(agentId: number) {
@@ -11,6 +13,7 @@ export abstract class IAgent {
         return this._agentId;
     }
     constructor() {
+        super();
     }
     public abstract fromDB<T>(v: T): Promise<void>;
     public abstract toDB<T>(): Promise<void>;

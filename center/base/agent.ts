@@ -16,6 +16,8 @@ export class Agent extends IAgent {
     constructor() {
         super();
         this._modules.set(Constants.ModuleName.Bag, new ModuleBag(this, Constants.MongoDBKey.Bag));
+
+        this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
     }
 
     // 加载数据

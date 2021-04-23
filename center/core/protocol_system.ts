@@ -11,5 +11,5 @@ CenterSystem.instance.registerWaitProtocol(
        console.log(uid);
        let msg: Protocols.LoginCenterReply = [uid, "xingwy login"]
        this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginCenterReply, token, msg);
-    },
+    }
 );
