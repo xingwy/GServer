@@ -1,5 +1,6 @@
 import { ModuleMgrBase } from "../base/module_base";
 import { MongoMgr } from "../../singleton/db/mongo";
+import { ModuleInclude } from "../modules/module_include";
 import { ModuleAccountMgr } from "../modules/module_account_mgr/module_account_mgr";
 
 // 模块集合管理
@@ -69,8 +70,8 @@ export class ModuleSystem {
     }
 
     // 获取模块
-    public getModuleMgr(modName: Constants.ModuleMgrName): ModuleMgrBase {
-        return this._cols.get(modName);
+    public getModuleMgr<T extends keyof ModuleInclude>(key: T): ModuleInclude[T] {
+        return <ModuleInclude[T]>(this._cols.get(key));
     }
 
     // 注册模块
@@ -80,5 +81,4 @@ export class ModuleSystem {
         }
         this._cols.set(modName, mgr);
     }
-
 }

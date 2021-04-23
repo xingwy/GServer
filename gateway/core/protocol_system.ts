@@ -1,6 +1,9 @@
 import { GatewaySystem } from "./gateway_system";
 import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
+import { ModuleSystem } from "./module_system";
+import { ModuleAccountMgr } from "../modules/module_account_mgr/module_account_mgr";
+
 // 验证登录  大概为 gateway => center(拿数据) => gateway => client
 GatewaySystem.instance.registerProtocol(
     Protocols.GatewayProtocolCode.GatewayAuthLogin,
@@ -8,7 +11,24 @@ GatewaySystem.instance.registerProtocol(
     async function(this: System, session: Session, tuple: Protocols.GatewayLoginAuth): Promise<void> {
         let account = tuple[Protocols.GatewayLoginAuthFiends.account];
         let password = tuple[Protocols.GatewayLoginAuthFiends.password];
-        console.log(account, password);
+        // 本地验证 获取到Uid
+        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+        let exist = accountMod.existUser(account);
+        if (!exist) {
+            // reply 
+            return;
+        }
+        let userInfo = accountMod.getUser(account);
+        // 登录center服务器
+        let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
+        if (!centerServic) {
+            // center未连接 reply
+            return;
+        }
+        let msg: Protocols.LoginCenter = [userInfo.uid]
+        let loginCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
+        console.log(loginCenterReply);
+        
         this.publishProtocol(session, 1,["ok", "123"])
     },
 );
@@ -48,3 +68,7 @@ GatewaySystem.instance.registerHttp(
 
     },
 );
+setTimeout(() => {
+let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+    
+}, 2000);

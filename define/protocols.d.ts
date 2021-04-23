@@ -47,15 +47,29 @@ declare namespace Protocols {
     }
     type GatewayLoginAuth = [string, string];
 
+    const enum LoginCenterReplyFields {
+        uid = 0,
+        name = 1,
+    }
+    type LoginCenterReply = [number, string]
+
     type CenterLoginInfo = [];
+
+
+    const enum LoginCenterFields {
+        uid = 0,
+    }
+    type LoginCenter = [number]
 
     /*************************** Tuple start ***************************/
     interface ProtocolsTuple {
         [GatewayProtocolCode.CreateUser]: CreateUser,
         [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth,
-
+        [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply,
+        
         [CenterProtocolCode.CreateAndLoginUser]: CreateAndLoginUser,
         [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
+        [CenterProtocolCode.LoginCenter]: LoginCenter,
         
     }
 
@@ -96,13 +110,15 @@ declare namespace Protocols {
     const enum GatewayProtocolCode {
         Base = 0x100000,                 // 起始段
         CreateUser = 0x100001,           // 创建角色
-        GatewayAuthLogin = 0x100002,        // 网关登录
+        GatewayAuthLogin = 0x100002,     // 网关登录
+        LoginCenterReply = 0x100003,     // 登录中心服返回
     }
     
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
         CreateAndLoginUser = 0x200001,   // 创建角色 
         AuthUserLogin = 0x200002,        // 验证角色登录
+        LoginCenter = 0x200003,          // 登录中心服务
         Max = 0x2fffff,
     }
 

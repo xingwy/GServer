@@ -1,4 +1,7 @@
+import { Session } from "../../singleton/network/session";
+import { GlobelMgr } from "../../singleton/utils/globel";
 import { ModuleSystem } from "../core/module_system";
+import { GatewaySystem } from "../core/gateway_system";
 
 export class LoginAction {
     private static _instance: LoginAction = new LoginAction();

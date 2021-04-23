@@ -48,6 +48,9 @@ export class ModuleAccountMgr extends ModuleMgrBase {
         return true;
     }
 
+    public getUser(account: string): IUserInfo {
+        return this._accountMap.get(account);
+    }
     public createUser(account: string, password: string, name: string, sex: number): ResultCode {
         // 检查重复账号
         if (!this.checkUser(account)) {

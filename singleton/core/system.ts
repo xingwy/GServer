@@ -275,7 +275,7 @@ export abstract class System {
                 }
                 // 截取token
                 let token: Uint32 = content.readInt32LE(0);
-                this.handleWaitProtocol(session, opcode, token, content.slice(4));
+                this.handleReplyProtocol(session, opcode, token, content.slice(4));
                 break;
             }
             default: {
@@ -285,7 +285,6 @@ export abstract class System {
     }
 
     public publishProtocol(to: Session, opcode: Uint32, data: any): void {
-        
         if (!to) {
             return;
         }
@@ -301,7 +300,7 @@ export abstract class System {
         to.receive(this._unique, opcode, Protocols.MessageType.Push, content);
     }
 
-    public invokeProtocol(to: Session, opcode: Uint32, data: any): any {
+    public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
         let token = new TokenSession();
 
         let promise = new Promise<any>(
@@ -311,6 +310,7 @@ export abstract class System {
             });
         token.promise = promise;
         token.owner = to;
+        token.opcode = reply;
 
         if (!to) {
             token.reject(0);
@@ -318,15 +318,26 @@ export abstract class System {
         }
 
         this.openToken(token);
-        let content: Buffer;
+        // token 句柄写入content
+        let size = 0;
+        let buffer: Buffer;
         if (data) {
             try {
-                content = MsgpackLite.encode(data);
+                buffer = MsgpackLite.encode(data);
+                size += buffer.length;
             } catch (error) {
                 console.log(error);
                 return;
             }
         }
+        let content: Buffer = Buffer.allocUnsafe(UNIQUE_SIZE + size);
+        let offset = 0;
+        content.writeInt32LE(token.handle, offset);
+        offset += UNIQUE_SIZE;
+        if (buffer) {
+            buffer.copy(content, offset);
+        }
+
         to.receive(this._unique, opcode, Protocols.MessageType.Wait, content);
         return promise;
     }
