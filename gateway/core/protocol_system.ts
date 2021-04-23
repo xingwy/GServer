@@ -16,7 +16,7 @@ GatewaySystem.instance.registerProtocol(
         let exist = accountMod.existUser(account);
         if (!exist) {
             // reply 
-            return;
+            // return;
         }
         let userInfo = accountMod.getUser(account);
         // 登录center服务器
@@ -25,9 +25,9 @@ GatewaySystem.instance.registerProtocol(
             // center未连接 reply
             return;
         }
-        let msg: Protocols.LoginCenter = [userInfo.uid]
+        let msg: Protocols.LoginCenter = [userInfo && userInfo.uid || 112233]
         let loginCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
-        console.log(loginCenterReply);
+        console.log("reply", loginCenterReply);
         
         this.publishProtocol(session, 1,["ok", "123"])
     },

@@ -40,12 +40,8 @@ export class CenterSystem extends System {
         this._accept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
             session.serviceType = Protocols.ServicType.GatewayServic;
             this._gateSession = session;
-            setInterval(() => {
-                // 向geteway发送消息 拿session
-                console.log('hello')
-                this.publishProtocol(this._gateSession, 1, Buffer.from("hello"));
-            },          5000);
-            
+            this._gateSession.open();
+            this.openSession(session);
         });
         
     }

@@ -37,11 +37,11 @@ abstract class Accept {
             this._address = {address: host, port, family: ""};
             let pipe: WebSocket;
             if (flag) {
-                pipe = new WebSocket(`wss://${host}:${port}?serviceType=${this.system.servicType}`, {
+                pipe = new WebSocket(`wss://${host}:${port}?servicType=${this.system.servicType}`, {
                     rejectUnauthorized: false,
                 });
             } else {
-                pipe = new WebSocket(`ws://${host}:${port}?serviceType=${this.system.servicType}`);
+                pipe = new WebSocket(`ws://${host}:${port}?servicType=${this.system.servicType}`);
             }
             // 开启通道
             session = this.onOpen(pipe);

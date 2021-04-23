@@ -50,10 +50,11 @@ export abstract class Session {
             this._address = request.socket.remoteAddress;
             this._port = request.socket.remotePort;   
             let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
-            let query = Object.assign({servicType: 0}, u.searchParams);
-            let servicType = query.servicType;
+            let param = u.searchParams;
+            let servicType = param.get("servicType");
+            // todo 传入token 防止恶意攻击
             if (servicType) {
-                this.serviceType = servicType;
+                this.serviceType = Number(servicType);
             }
         }
 
@@ -166,8 +167,7 @@ export class ServiceSession extends Session {
                 return;
             }
             let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
-            console.log([from, to, opcode, flag, tuple])
-            this._system.receiveProtocol(from, to, opcode, flag, tuple);
+            this._system.receiveProtocol(this.handle, to, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }

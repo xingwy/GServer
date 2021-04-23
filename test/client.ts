@@ -10,10 +10,10 @@ function setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buf
     let offset = 0;
     buffer.writeUInt32LE(<Uint32> (buffer.byteLength), offset);
     offset += 4;
-    buffer.writeDoubleLE(from, offset);
-    offset += 8;
-    buffer.writeDoubleLE(unique, offset);
-    offset += 8;
+    // buffer.writeDoubleLE(from, offset);
+    // offset += 8;
+    // buffer.writeDoubleLE(unique, offset);
+    // offset += 8;
     buffer.writeInt32LE(opcode, offset);
     offset += 4;
     buffer.writeUInt8(flag, offset);
@@ -68,7 +68,7 @@ async function main() {
         console.log("send")
         let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.GatewayAuthLogin, 1, content);
         session.send(buffer);
-    },          5000);
+    },          3000);
     
 
     process.on("exit", () => {

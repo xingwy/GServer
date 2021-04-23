@@ -180,6 +180,7 @@ export abstract class System {
     public handleWaitProtocol(from: Session, opcode: Uint32, token: Uint32, content: Buffer): void {
         if (!this._waitHandlers.has(opcode)) {
             // TODO_LOG
+            return;
         }
         let handler = this._waitHandlers.get(opcode);
         if ((handler.sign & from.sign) == Protocols.SignType.Ping) {
@@ -337,7 +338,6 @@ export abstract class System {
         if (buffer) {
             buffer.copy(content, offset);
         }
-
         to.receive(this._unique, opcode, Protocols.MessageType.Wait, content);
         return promise;
     }
@@ -378,9 +378,7 @@ export abstract class System {
     public openSession(session: Session): Uint16 {
         session.handle = this._sessions.alloc(session);
         // this.uniqueToSession.set(session.unique, session); 
-
         switch (session.serviceType) {
-
             case Protocols.ServicType.CenterServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
                 break;
