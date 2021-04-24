@@ -1,7 +1,10 @@
 import { Agent } from "../base/agent";
 
+/**
+ * 人物模块
+ */
 
-export abstract class  ModuleBase {
+export abstract class UserBase {
     private _agent: Agent;
     private _agentId: number;
     private _dbKey: string;
@@ -28,16 +31,13 @@ export abstract class  ModuleBase {
         return this._needSave;
     }
 
-    
-
-    public preLoad(): void {
+    public load(): void {
     }
 
-    public fromDB<T>(v: T): void {
-        return;
+    public fromDB<T extends keyof Constants.DBFieldsType>(record: Constants.DBFieldsType[T]): void {
     }
 
-    public toDB<T>(): T {
+    public toDB<T extends keyof Constants.DBFieldsType>(): Constants.DBFieldsType[T] {
         return null;
     }
     

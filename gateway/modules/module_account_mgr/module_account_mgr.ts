@@ -31,7 +31,7 @@ export class ModuleAccountMgr extends ModuleMgrBase {
         for (let [_, v] of this._accountMap) {
             data[Constants.AccountsFields.list].push([v.account, v.uid]);
         }
-        return data;
+        return data as any;
     }
 
     public checkUser(account: string): boolean {

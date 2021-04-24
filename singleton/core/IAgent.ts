@@ -12,8 +12,9 @@ export abstract class IAgent extends Event {
     public get agentId(): number {
         return this._agentId;
     }
-    constructor() {
+    constructor(agentId: number) {
         super();
+        this._agentId = agentId;
     }
     public abstract fromDB<T>(v: T): Promise<void>;
     public abstract toDB<T>(): Promise<void>;

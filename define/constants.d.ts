@@ -7,6 +7,12 @@
         Success = 0,     // 成功
     }
 
+    const enum SexType {
+        Man = 1,
+        Woman = 2,
+    }
+    
+
     // account password name sex 
     type Data1 = [string, string, string, number];
     type Data2 = [string, string];
@@ -47,6 +53,8 @@
 
 
     /*************************** DB fields start ***************************/
+
+    // gateway
     const enum AccountFields {
         account = 0, // 账号
         uid = 1, // 用户唯一ID
@@ -62,16 +70,27 @@
         AccountMgr = "AccountMgr",
     }
 
+    // center
+    const enum UserSocialFields {
+        name = 0, // 名称
+        level = 1, // 等级
+        sex = 2, // 性别
+    }
+    type UserSocial = [string, number, number];
+
     const enum MongoDBKey {
         AccountMgr = "AccountMgr",
         Human = "HumanMgr",
         Bag = "Bag",
+
+        UserSocial = "UserSocial"
     }
 
 
     // 注册DB值类型
     interface DBFieldsType {
         [MongoDBKey.AccountMgr]: Accounts,
+        [MongoDBKey.UserSocial]: UserSocial,
     }
 
     /***************************  DB fields end  ***************************/

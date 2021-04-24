@@ -1,7 +1,7 @@
 import { IAgent } from "../../singleton/core/IAgent";
 import { MongoMgr } from "../../singleton/db/mongo";
-import { ModuleBase } from "../modules/module_base";
-import { ModuleBag } from "../modules/module_bag/module_bag";
+import { UserBase } from "../user/user_base";
+import { UserBag } from "../user/user_bag/user_bag";
 import * as Tool from "../../singleton/utils/tool";
 
 /**
@@ -10,18 +10,18 @@ import * as Tool from "../../singleton/utils/tool";
 
 export class Agent extends IAgent {
 
-    private _modules: Map<string, ModuleBase>;
+    private _modules: Map<string, UserBase>;
     private _img: boolean;
     private _timer: NodeJS.Timeout;
-    constructor() {
-        super();
-        this._modules.set(Constants.ModuleName.Bag, new ModuleBag(this, Constants.MongoDBKey.Bag));
+    constructor(agentId: number) {
+        super(agentId);
+        this._modules.set(Constants.ModuleName.Bag, new UserBag(this, Constants.MongoDBKey.Bag));
 
         this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
     }
 
     // 加载数据
-    public load(img: boolean = false): void {
+    public async load(img: boolean = false): Promise<void> {
         // MongoDBKey
         this._img = img;
 
@@ -31,9 +31,9 @@ export class Agent extends IAgent {
     }
 
     public onTimer(): void {
-        this._modules.forEach((mod: ModuleBase) => {
+        this._modules.forEach((userMod: UserBase) => {
             let now = Tool.getLocalTime();
-            mod.ontimer(now);
+            userMod.ontimer(now);
         })
         
 
@@ -43,10 +43,9 @@ export class Agent extends IAgent {
     // 调用定时模块
     public async fromDB<T>(): Promise<void> {
         for (let [_, mod] of this._modules) {
-            let buffer = await MongoMgr.instance.hget(mod.dbKey, this.agentId);
+            let record = await MongoMgr.instance.hget(mod.dbKey, this.agentId);
             // decode
-            let data: T;
-            mod.fromDB(data);
+            mod.fromDB(record);
         }
     }
     public async toDB<T>(): Promise<void> {
