@@ -396,8 +396,8 @@ export abstract class System {
                 break;
             }
             case Protocols.ServicType.Client: {
-                // 客户端服务不操作
-                this._userSessions.set(session.unique, <ServiceSession> session);
+                // 客户端服务不操作 不验证先不存映射表
+                // this._userSessions.set(session.unique, <ServiceSession> session);
                 break;
             }
             default:
@@ -484,6 +484,10 @@ export abstract class System {
         return this.uniqueToSession.get(unique);
     }
 
+    public setUserSession(uid: Uint64, session: Session): void {
+        this._userSessions.set(uid, session);
+    }
+
     public getUserSession(uid: Uint64): Session {
         return this._userSessions.get(uid);
     }
@@ -496,7 +500,6 @@ export abstract class System {
     }
 
     public close(): void {
-
     }
     
 }

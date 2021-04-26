@@ -17,7 +17,7 @@ CenterSystem.instance.registerWaitProtocol(
             await agent.load();
             (<CenterSystem>this).useMap.set(uid, agent);
         }
-        let msg: Protocols.LoginCenterReply = [uid, "xingwy login"]
+        let msg: Protocols.LoginCenterReply = [Constants.ResultCode.Success];
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginCenterReply, token, msg);
     }
 );

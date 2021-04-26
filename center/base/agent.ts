@@ -24,7 +24,6 @@ export class Agent extends IAgent {
     public async load(img: boolean = false): Promise<void> {
         // MongoDBKey
         this._img = img;
-
         if (!img) {
             this._timer = setInterval(this.onTimer.bind(this), 1000);
         }

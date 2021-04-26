@@ -48,10 +48,9 @@ declare namespace Protocols {
     type GatewayLoginAuth = [string, string];
 
     const enum LoginCenterReplyFields {
-        uid = 0,
-        name = 1,
+        code = 0,
     }
-    type LoginCenterReply = [number, string]
+    type LoginCenterReply = [number]
 
     type CenterLoginInfo = [];
 
@@ -67,14 +66,61 @@ declare namespace Protocols {
         [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth,
         [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply,
         
-        [CenterProtocolCode.CreateAndLoginUser]: CreateAndLoginUser,
+        // [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter,
         [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
         [CenterProtocolCode.LoginCenter]: LoginCenter,
+
+        [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
         
     }
 
     /*************************** Tuple end ***************************/
 
+    /*************************** Code start ***************************/
+    const enum GatewayProtocolCode {
+        Base = 0x100000,                 // 起始段
+        CreateUser = 0x100001,           // 创建角色
+        GatewayAuthLogin = 0x100002,     // 网关登录
+        LoginCenterReply = 0x100003,     // 登录中心服返回
+        Max = 0x1fffff,
+    }
+    
+    const enum CenterProtocolCode {
+        Base = 0x200000,                 // 起始段
+        CreateUserToCenter = 0x200001,   // 创建角色 
+        AuthUserLogin = 0x200002,        // 验证角色登录
+        LoginCenter = 0x200003,          // 登录中心服务
+        Max = 0x2fffff,
+    }
+
+    const enum AuthUserLoginReplyFields {
+        code = 0,
+    }
+    type AuthUserLoginReply = [number];
+
+    const enum ClientProtocolCode {
+        Base = 0x900000,                 // 起始段
+        CreateUserReply = 0x900001,      // 客户端创角返回
+        AuthUserLoginReply = 0x900002,   // 验证角色登录返回
+        Max = 0x9fffff,
+    }
+
+    const enum ProtocolCode {
+        ProtocolsCodeMax = 0xF00000,      
+    }
+    /*************************** Code end ***************************/
+
+    const enum AcceptOperate {
+        active = 1,
+        passive,
+    }
+
+    const enum RequestType {
+        Get = 1,
+        Post = 2,
+    }
+
+    
     /*************************** Http start ***************************/
 
     enum CreateFields {
@@ -104,38 +150,6 @@ declare namespace Protocols {
         [HttpProtocolPath.Login]: Login,
     }
     /*************************** Http end ***************************/
-
-
-    /*************************** Code start ***************************/
-    const enum GatewayProtocolCode {
-        Base = 0x100000,                 // 起始段
-        CreateUser = 0x100001,           // 创建角色
-        GatewayAuthLogin = 0x100002,     // 网关登录
-        LoginCenterReply = 0x100003,     // 登录中心服返回
-    }
-    
-    const enum CenterProtocolCode {
-        Base = 0x200000,                 // 起始段
-        CreateAndLoginUser = 0x200001,   // 创建角色 
-        AuthUserLogin = 0x200002,        // 验证角色登录
-        LoginCenter = 0x200003,          // 登录中心服务
-        Max = 0x2fffff,
-    }
-
-    const enum ProtocolCode {
-        ProtocolsCodeMax = 0xF00000,      
-    }
-    /*************************** Code end ***************************/
-
-    const enum AcceptOperate {
-        active = 1,
-        passive,
-    }
-
-    const enum RequestType {
-        Get = 1,
-        Post = 2,
-    }
 
 }
     

@@ -27,9 +27,18 @@ GatewaySystem.instance.registerProtocol(
         }
         let msg: Protocols.LoginCenter = [userInfo && userInfo.uid || 112233]
         let loginCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
-        console.log("reply", loginCenterReply);
-        
-        this.publishProtocol(session, 1,["ok", "123"])
+
+        let code = loginCenterReply[Protocols.LoginCenterReplyFields.code];
+        if (code != Constants.ResultCode.Success) {
+            // 登录失败
+            this.publishProtocol(session, 1,["ok", "123"]) 
+            return;
+        }
+
+        // 认为登录成功， 开启session映射表
+        this.setUserSession(userInfo.uid, session);
+        // 推动客户端登录成功协议
+        this.publishProtocol(session, 1,["ok", "123"]);
     },
 );
 
@@ -68,7 +77,3 @@ GatewaySystem.instance.registerHttp(
 
     },
 );
-setTimeout(() => {
-let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
-    
-}, 2000);
