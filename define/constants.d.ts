@@ -3,8 +3,12 @@
  */
  declare namespace Constants {
     
+    // 后期脚本整合错误码
     const enum ResultCode {
         Success = 0,     // 成功
+        ServicNotExist = 1,     // 服务不存在
+        ExistUser = 2,   // 角色已经存在
+        
     }
 
     const enum SexType {

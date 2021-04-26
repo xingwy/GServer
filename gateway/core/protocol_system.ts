@@ -57,6 +57,7 @@ GatewaySystem.instance.registerProtocol(
         let user = accountMod.getUser(account);
         if (user) {
             // 已存在
+            this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.ExistUser]);
             return;
         }
 
@@ -64,16 +65,19 @@ GatewaySystem.instance.registerProtocol(
         let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
         if (!centerServic) {
             // center未连接 reply
+            this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.ServicNotExist]);
             return;
         }
         let createUserToCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, [0, name, sex])
         let code = createUserToCenterReply[Protocols.CreateUserToCenterReplyFields.code];
         if (code != Constants.ResultCode.Success) {
+            this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
             return;
         }
 
+        accountMod.createUser(account, password);
         // 保存account uid passward映射表
-        this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [account, 1, password]);
+        this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.Success]);
     },
 );
 

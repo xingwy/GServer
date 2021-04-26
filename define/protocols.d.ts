@@ -72,6 +72,7 @@ declare namespace Protocols {
         [CenterProtocolCode.LoginCenter]: LoginCenter;
 
         [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
+        [ClientProtocolCode.CreateUserReply]: CreateUserReply;
         
     }
 
@@ -114,6 +115,11 @@ declare namespace Protocols {
         code = 0,
     }
     type AuthUserLoginReply = [number];
+
+    const enum CreateUserReplyFields {
+        code = 0,
+    }
+    type CreateUserReply = [number];
 
     const enum ClientProtocolCode {
         Base = 0x900000,                 // 起始段
