@@ -4,7 +4,7 @@ import { Agent } from "../../base/agent";
 import { UserBase } from "../user_base";
 
 
-export class UserSocial extends UserBase {
+export class UserHuman extends UserBase {
     private _name: string;
     private _level: number;
     private _sex: Constants.SexType;
@@ -38,6 +38,10 @@ export class UserSocial extends UserBase {
 
     public setName(name: string): void {
         this._name = name;
+    }
+
+    public setSex(sex: Constants.SexType): void {
+        this._sex = sex;
     }
 }
 

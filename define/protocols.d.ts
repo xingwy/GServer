@@ -25,14 +25,14 @@ declare namespace Protocols {
 
     /*************************** Base start ***************************/
     // account password name sex 
-    enum CreateAndLoginUserFields {
+    const enum CreateAndLoginUserFields {
         account = 0,
         name = 1,
         sex = 2,
     }
     type CreateAndLoginUser = [string, string, number];
 
-    enum CreateUserFields {
+    const enum CreateUserFields {
         account = 0,
         password = 1,
         name = 2,
@@ -59,16 +59,17 @@ declare namespace Protocols {
         uid = 0,
     }
     type LoginCenter = [number]
-
+    
     /*************************** Tuple start ***************************/
     interface ProtocolsTuple {
-        [GatewayProtocolCode.CreateUser]: CreateUser,
-        [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth,
-        [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply,
+        [GatewayProtocolCode.CreateUser]: CreateUser;
+        [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth;
+        [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply;
+        [GatewayProtocolCode.CreateUserToCenterReply]: CreateUserToCenterReply;
         
-        // [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter,
-        [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo,
-        [CenterProtocolCode.LoginCenter]: LoginCenter,
+        [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
+        [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo;
+        [CenterProtocolCode.LoginCenter]: LoginCenter;
 
         [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
         
@@ -77,14 +78,30 @@ declare namespace Protocols {
     /*************************** Tuple end ***************************/
 
     /*************************** Code start ***************************/
+    
+    
+    const enum CreateUserToCenterReplyFields {
+        code = 0,
+    }
+    type CreateUserToCenterReply = [number];
+    
     const enum GatewayProtocolCode {
-        Base = 0x100000,                 // 起始段
-        CreateUser = 0x100001,           // 创建角色
-        GatewayAuthLogin = 0x100002,     // 网关登录
-        LoginCenterReply = 0x100003,     // 登录中心服返回
+        Base = 0x100000,                    // 起始段
+        CreateUser = 0x100001,              // 创建角色
+        GatewayAuthLogin = 0x100002,        // 网关登录
+        LoginCenterReply = 0x100003,        // 登录中心服返回
+        CreateUserToCenterReply = 0x100004, // 创建角色返回
         Max = 0x1fffff,
     }
     
+    
+    const enum CreateUserToCenterFields {
+        uid = 0,
+        name = 1,
+        sex = 2,
+    }
+    type CreateUserToCenter = [number, string, number];
+
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
         CreateUserToCenter = 0x200001,   // 创建角色 

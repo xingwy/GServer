@@ -1,7 +1,9 @@
 import { IAgent } from "../../singleton/core/IAgent";
 import { MongoMgr } from "../../singleton/db/mongo";
 import { UserBase } from "../user/user_base";
+import { UserInclude } from "../user/user_include";
 import { UserBag } from "../user/user_bag/user_bag";
+import { UserHuman } from "../user/user_human/user_human";
 import * as Tool from "../../singleton/utils/tool";
 
 /**
@@ -16,8 +18,10 @@ export class Agent extends IAgent {
     constructor(agentId: number) {
         super(agentId);
         this._modules.set(Constants.ModuleName.Bag, new UserBag(this, Constants.MongoDBKey.Bag));
+        this._modules.set(Constants.ModuleName.Human, new UserHuman(this, Constants.MongoDBKey.Bag));
+        
 
-        this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
+        // this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
     }
 
     // 加载数据
@@ -59,6 +63,10 @@ export class Agent extends IAgent {
             let buffer: Buffer;
             await MongoMgr.instance.hset(mod.dbKey, this.agentId, buffer);
         }
+    }
+
+    public getModule<T extends keyof UserInclude>(key: T): UserInclude[T] {
+        return <UserInclude[T]>this._modules.get(key);
     }
 
 } 

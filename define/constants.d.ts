@@ -57,9 +57,10 @@
     // gateway
     const enum AccountFields {
         account = 0, // 账号
-        uid = 1, // 用户唯一ID
+        password = 1,  // 密码
+        uid = 2, // 用户唯一ID
     }
-    type Account = [string, number];
+    type Account = [string, string, number];
 
     const enum AccountsFields {
         list = 0, // 列表
