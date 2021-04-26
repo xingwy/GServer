@@ -6,9 +6,11 @@
     // 后期脚本整合错误码
     const enum ResultCode {
         Success = 0,     // 成功
-        ServicNotExist = 1,     // 服务不存在
-        ExistUser = 2,   // 角色已经存在
-        
+        UnknownError = 1,       // 未知错误
+        ServicNotExist = 2,     // 服务不存在
+        ExistUser = 3,   // 角色已经存在
+        WrongPassword = 3,  // 密码错误
+        UserNotExist = 4,   // 角色不存在
     }
 
     const enum SexType {

@@ -1,4 +1,5 @@
 import { ModuleMgrBase } from "../../base/module_base";
+import { GlobelMgr } from "../../../singleton/utils/globel";
 
 interface IUserInfo {
     account: string;   // 账号和uid绑定(目前这样设计)
@@ -56,26 +57,26 @@ export class ModuleAccountMgr extends ModuleMgrBase {
     public getUser(account: string): IUserInfo {
         return this._accountMap.get(account);
     }
-    public createUser(account: string, password: string): ResultCode {
+
+    public async createUser(account: string, password: string): Promise<Constants.ResultCode> {
         // 检查重复账号
-        if (!this.checkUser(account)) {
-            return ResultCode.Error;
+        if (this.checkUser(account)) {
+            return Constants.ResultCode.ExistUser;
         }
-        let user: IUserInfo;
-        user.account = account;
+        let uid = GlobelMgr.instance.nextId();
+        let user: IUserInfo = {account, password, uid};
         this._accountMap.set(account, user);
-        return ResultCode.Success;
+        return Constants.ResultCode.Success;
     }
 
-    // 先不做，后面考虑验证账号另起入口进程服务
-    public authUser(account: string, password: string): ResultCode {
-        // if (!this._accountMap.has(account)) {
-        //     return ResultCode.Error;
-        // }
-        // let user = this._accountMap.get(account);
-        // if (user.password !== password) {
-        //     return ResultCode.Error;
-        // }
-        return ResultCode.Success;
+    public authUser(account: string, password: string): Constants.ResultCode {
+        let user = this.getUser(account);
+        if (!user) {
+            return Constants.ResultCode.UserNotExist;
+        }
+        if (user.password != password) {
+            return Constants.ResultCode.WrongPassword;
+        }
+        return Constants.ResultCode.Success;
     }
 }

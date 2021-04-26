@@ -16,11 +16,6 @@ interface IAddressInfo {
     port: number;
 }
 
-declare const enum ResultCode {
-    Success = 0,     // 成功
-    Error,
-}
-
 declare type SessionId = number;
 declare type UserId = number;
 declare type ProtocolCode = number;

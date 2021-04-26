@@ -30,9 +30,9 @@ export class CenterSystem extends System {
     }
     public onSessionOpen(session: Session): void {
     }
-    public onSessionError(session: Session, reason: ResultCode): void {
+    public onSessionError(session: Session, reason: Constants.ResultCode): void {
     }
-    public onSessionClose(session: Session, reason: ResultCode): void {
+    public onSessionClose(session: Session, reason: Constants.ResultCode): void {
     }
 
     public async connect(args: IAddressInfo): Promise<void> {

@@ -2,7 +2,6 @@ import { GatewaySystem } from "./gateway_system";
 import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { ModuleSystem } from "./module_system";
-import { ModuleAccountMgr } from "../modules/module_account_mgr/module_account_mgr";
 
 // 验证登录  大概为 gateway => center(拿数据) => gateway => client
 GatewaySystem.instance.registerProtocol(
@@ -15,8 +14,8 @@ GatewaySystem.instance.registerProtocol(
         let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
         let exist = accountMod.existUser(account);
         if (!exist) {
-            // reply 
-            // return;
+            this.publishProtocol(session, Protocols.ClientProtocolCode.AuthUserLoginReply, [Constants.ResultCode.UserNotExist]); 
+            return;
         }
         let userInfo = accountMod.getUser(account);
         // 登录center服务器
@@ -31,14 +30,14 @@ GatewaySystem.instance.registerProtocol(
         let code = loginCenterReply[Protocols.LoginCenterReplyFields.code];
         if (code != Constants.ResultCode.Success) {
             // 登录失败
-            this.publishProtocol(session, 1,["ok", "123"]) 
+            this.publishProtocol(session, Protocols.ClientProtocolCode.AuthUserLoginReply,[code]);
             return;
         }
 
         // 认为登录成功， 开启session映射表
         this.setUserSession(userInfo.uid, session);
         // 推动客户端登录成功协议
-        this.publishProtocol(session, 1,["ok", "123"]);
+        this.publishProtocol(session, Protocols.ClientProtocolCode.AuthUserLoginReply,[Constants.ResultCode.Success]);
     },
 );
 
@@ -74,9 +73,14 @@ GatewaySystem.instance.registerProtocol(
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
             return;
         }
-
-        accountMod.createUser(account, password);
+        code = await accountMod.createUser(account, password);
         // 保存account uid passward映射表
+        if (code != Constants.ResultCode.Success) {
+            if (code != Constants.ResultCode.Success) {
+                this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
+                return;
+            }
+        }
         this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.Success]);
     },
 );

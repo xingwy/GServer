@@ -49,8 +49,8 @@ export abstract class System {
 
     public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
     public abstract onSessionOpen(session: Session): void;
-    public abstract onSessionError(session: Session, reason: ResultCode): void;
-    public abstract onSessionClose(session: Session, reason: ResultCode): void;
+    public abstract onSessionError(session: Session, reason: Constants.ResultCode): void;
+    public abstract onSessionClose(session: Session, reason: Constants.ResultCode): void;
 
     /**
      * 注册HTTP请求协议
@@ -407,7 +407,7 @@ export abstract class System {
         return session.handle;
     }
 
-    public closeSession(handle: Uint32, reason: ResultCode): void {
+    public closeSession(handle: Uint32, reason: Constants.ResultCode): void {
         let session = this._sessions.get(handle);
         if (!session) {
             return;
@@ -468,7 +468,7 @@ export abstract class System {
      * @param handle 
      * @param reason 
      */
-    public closeToken(handle: Uint16, reason: ResultCode): void {
+    public closeToken(handle: Uint16, reason: Constants.ResultCode): void {
         let session = this._tokens.get(handle);
         if (!session) {
             return;

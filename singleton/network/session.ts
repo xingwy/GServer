@@ -15,11 +15,11 @@ export class TokenSession  implements IHeapElement {
     public promise: Promise<any>;
     public owner: Session;
     public resolve: (value?: any) => void;
-    public reject: (reason: ResultCode) => void;
+    public reject: (reason: Constants.ResultCode) => void;
 
     public readonly TIMEOUT: number = 10000;
 
-    public close(reason: ResultCode): void {
+    public close(reason: Constants.ResultCode): void {
         if (!this.reject) {
             this.reject(reason);
         }
@@ -107,7 +107,7 @@ export abstract class Session {
      */
     public abstract onSocketMessage(event: WebSocket.MessageEvent): void;
 
-    public abstract receive(from: SessionId, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<ResultCode>; 
+    public abstract receive(from: SessionId, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<Constants.ResultCode>; 
 
     /**
      * 广播
@@ -173,16 +173,16 @@ export class ServiceSession extends Session {
         }
     }
 
-    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<ResultCode> {
+    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
         // TODO 发送检查
         try {
             let buffer = this.setFixedData(from, opcode, flag, content);
             this._socket.send(buffer);
         } catch (error) {
             console.log(error);
-            return ResultCode.Error;
+            return Constants.ResultCode.UnknownError;
         }
-        return ResultCode.Success;
+        return Constants.ResultCode.Success;
     }
 
     public buildFixedData(content: Buffer): [number, number, number, number, Buffer] {
@@ -251,7 +251,7 @@ export class ClientSession extends Session {
         }
     }
 
-    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<ResultCode> {
+    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
         // TODO 发送检查
         try {
             console.log([from, opcode, flag, content])
@@ -259,9 +259,9 @@ export class ClientSession extends Session {
             this._socket.send(buffer);
         } catch (error) {
             console.log(error);
-            return ResultCode.Error;
+            return Constants.ResultCode.UnknownError;
         }
-        return ResultCode.Success;
+        return Constants.ResultCode.Success;
     }
 
     public buildFixedData(content: Buffer): [number, number, Buffer] {
