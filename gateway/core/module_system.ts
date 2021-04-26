@@ -45,7 +45,6 @@ export class ModuleSystem {
         } catch (error) {
             console.log(error)
         }
-        
     }
     
     // 定期落地
@@ -58,14 +57,12 @@ export class ModuleSystem {
         } catch (error) {
             console.log(error)
         }
-        
     }
 
     public async close(): Promise<void> {
         for (let [_, mgr] of this._cols) {
             await mgr.close();
         }
-
         await this.save();
     }
 

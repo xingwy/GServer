@@ -47,13 +47,33 @@ GatewaySystem.instance.registerProtocol(
     Protocols.GatewayProtocolCode.CreateUser,
     Protocols.SignType.Auth,
     async function(this: System, session: Session, tuple: Protocols.CreateUser): Promise<void> {
-        let account = tuple[0];
-        let password = tuple[1];
-        let name = tuple[2];
-        let sex = 0;
+        let account = tuple[Protocols.CreateUserFields.account];
+        let password = tuple[Protocols.CreateUserFields.password];
+        let name = tuple[Protocols.CreateUserFields.name];
+        let sex = tuple[Protocols.CreateUserFields.sex];
 
-        // let result = ModuleUserMgr.instance.createUser(account, password, name, sex);
-        this.publishProtocol(session, 1, [account, 1, password]);
+        // 检测account是否存在
+        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+        let user = accountMod.getUser(account);
+        if (user) {
+            // 已存在
+            return;
+        }
+
+        // 拿center服务器session
+        let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
+        if (!centerServic) {
+            // center未连接 reply
+            return;
+        }
+        let createUserToCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, [0, name, sex])
+        let code = createUserToCenterReply[Protocols.CreateUserToCenterReplyFields.code];
+        if (code != Constants.ResultCode.Success) {
+            return;
+        }
+
+        // 保存account uid passward映射表
+        this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [account, 1, password]);
     },
 );
 

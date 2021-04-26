@@ -2,6 +2,7 @@ import { ModuleMgrBase } from "../../base/module_base";
 
 interface IUserInfo {
     account: string;   // 账号和uid绑定(目前这样设计)
+    password: string;  // 密码
     uid: number;       // 全服唯一ID 
 }
 
@@ -21,7 +22,11 @@ export class ModuleAccountMgr extends ModuleMgrBase {
         let list = data[Constants.AccountsFields.list];
         if (list) {
             for (let v of list) {
-                this._accountMap.set(v[Constants.AccountFields.account], {account: v[Constants.AccountFields.account], uid: v[Constants.AccountFields.uid]});
+                this._accountMap.set(v[Constants.AccountFields.account], {
+                        account: v[Constants.AccountFields.account], 
+                        password: v[Constants.AccountFields.password],
+                        uid: v[Constants.AccountFields.uid],
+                    });
             }
         }
     }
@@ -29,9 +34,9 @@ export class ModuleAccountMgr extends ModuleMgrBase {
     public toDB<T extends keyof Constants.DBFieldsType>(): Constants.DBFieldsType[T] {
         let data: Constants.Accounts = [new Array<Constants.Account>()];
         for (let [_, v] of this._accountMap) {
-            data[Constants.AccountsFields.list].push([v.account, v.uid]);
+            data[Constants.AccountsFields.list].push([v.account, v.password, v.uid]);
         }
-        return data as any;
+        return <Constants.DBFieldsType[T]>data;
     }
 
     public checkUser(account: string): boolean {
