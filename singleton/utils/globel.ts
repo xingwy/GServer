@@ -1,11 +1,20 @@
 
 export class GlobelMgr {
 
+    private _groupId: number;
+    private static _instance: GlobelMgr = new GlobelMgr();
+
     public static get instance(): GlobelMgr {
         return this._instance;
     }
 
-    private static _instance: GlobelMgr = new GlobelMgr();
+    public get groupId(): number {
+        return this._groupId;
+    }
+    public set groupId(id) {
+        this._groupId = id;
+    }
+
     private _nextId: number;
     constructor() {
         this._nextId = 1;
@@ -14,4 +23,6 @@ export class GlobelMgr {
     public nextId(): number {
         return Date.now();
     }
+
+
 }

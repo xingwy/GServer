@@ -1,5 +1,7 @@
 {
-    "group": 1,
+    "group": {
+        "id": 1
+    },
     "tcp": {
         "client": {"host": "127.0.0.1", "port": 10001},
         "gateway": {"host": "127.0.0.1", "port": 10002},

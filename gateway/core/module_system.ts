@@ -1,5 +1,6 @@
 import { ModuleMgrBase } from "../base/module_base";
 import { MongoMgr } from "../../singleton/db/mongo";
+import { GlobelMgr } from "../../singleton/utils/globel";
 import { ModuleInclude } from "../modules/module_include";
 import { ModuleAccountMgr } from "../modules/module_account_mgr/module_account_mgr";
 
@@ -52,7 +53,7 @@ export class ModuleSystem {
         try {
             for (let [_, mgr] of this._cols) {
                 let data = mgr.toDB();
-                await MongoMgr.instance.hset(mgr.dbKey, mgr.modName, data);
+                await MongoMgr.instance.hset(mgr.dbKey, GlobelMgr.instance.groupId, data);
             }
         } catch (error) {
             console.log(error)
