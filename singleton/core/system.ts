@@ -407,10 +407,10 @@ export abstract class System {
         return session.handle;
     }
 
-    public closeSession(handle: Uint32, reason: Constants.ResultCode): void {
+    public closeSession(handle: Uint32, reason: Constants.ResultCode): Session {
         let session = this._sessions.get(handle);
         if (!session) {
-            return;
+            return null;
         }
         switch (session.serviceType) {
             case Protocols.ServicType.CenterServic: {
@@ -449,6 +449,7 @@ export abstract class System {
         // this.uniqueToSession.delete(session.unique);
         this._sessions.free(handle);
         session.close();
+        return session;
         
     }
 

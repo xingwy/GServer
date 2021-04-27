@@ -52,8 +52,19 @@ export class CenterSystem extends System {
             this._gateSession.open();
             this.openSession(session);
         });
+
+        setInterval(() => {
+            console.log("11")
+        }, 1500)
         
     }
 
+    public closeSession(handle: Uint32, reason: Constants.ResultCode): Session {
+        let session = super.closeSession(handle, reason);
+        if (session == this._gateSession) {
+            this.close();
+        }
+        return session;
+    }
     
 }

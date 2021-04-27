@@ -146,7 +146,7 @@ export abstract class Session {
      */
     protected onSocketClose(event: WebSocket.CloseEvent): void {
         // 断开时调用
-        this._system.closeSession(this.unique, 0);
+        this._system.closeSession(this.handle, 0);
     }
 }
 
