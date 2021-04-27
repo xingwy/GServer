@@ -24,7 +24,7 @@ GatewaySystem.instance.registerProtocol(
             // center未连接 reply
             return;
         }
-        let msg: Protocols.LoginCenter = [userInfo && userInfo.uid || 112233]
+        let msg: Protocols.LoginCenter = [userInfo && userInfo.uid]
         let loginCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
 
         let code = loginCenterReply[Protocols.LoginCenterReplyFields.code];
@@ -59,7 +59,7 @@ GatewaySystem.instance.registerProtocol(
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.ExistUser]);
             return;
         }
-
+        console.log(user)
         // 拿center服务器session
         let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
         if (!centerServic) {
@@ -69,6 +69,7 @@ GatewaySystem.instance.registerProtocol(
         }
         let createUserToCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, [0, name, sex])
         let code = createUserToCenterReply[Protocols.CreateUserToCenterReplyFields.code];
+        console.log(code);
         if (code != Constants.ResultCode.Success) {
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
             return;

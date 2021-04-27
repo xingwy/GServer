@@ -4,6 +4,7 @@ import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
 import { Proxy } from "../../singleton/network/proxy";
 import { GlobelMgr } from "../../singleton/utils/globel";
 import { LoginAction } from "../actions/login_action"; 
+import { ModuleSystem } from "./module_system";
 
 export class GatewaySystem extends System {
 
@@ -40,7 +41,7 @@ export class GatewaySystem extends System {
     }
     public async close(): Promise<void> {
         super.close();
-        
+        await ModuleSystem.instance.close();
         process.exit(0);
     }
 

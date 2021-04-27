@@ -17,11 +17,15 @@ export class Agent extends IAgent {
     private _timer: NodeJS.Timeout;
     constructor(agentId: number) {
         super(agentId);
+        this._modules = new Map<string, UserBase>();
+        this.moduleInit();
+    }
+
+    public moduleInit(): void {
         this._modules.set(Constants.ModuleName.Bag, new UserBag(this, Constants.MongoDBKey.Bag));
         this._modules.set(Constants.ModuleName.Human, new UserHuman(this, Constants.MongoDBKey.Bag));
-        
-
         // this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
+
     }
 
     // 加载数据

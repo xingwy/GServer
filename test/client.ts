@@ -2,18 +2,30 @@ import * as WebSocket from "ws";
 import { Encoding } from "../singleton/io/msgpack";
 import * as MsgpackLite from "msgpack-lite";
 
-const FIXED_BUFFER = 4 + 8 + 8 + 4 + 1;
+const CLIENT_FIXED_BUFFER = 4 + 4 + 1;
+function buildFixedData(content: Buffer): [number, number, Buffer] {
+    let offset = 0;
+    let size = content.readUInt32LE(offset);
+    offset += 4;
+    if (size !== content.length) {
+        // 校验数据长度
+        console.log("消息长度不足");
+        throw(new Error("消息长度不足"));
+    }
+    let opcode = content.readUInt32LE(offset);
+    offset += 4;
+    let flag = content.readUInt8(offset);
+    offset += 1;
+    let tuple = content.slice(offset);
+    return [opcode, flag, tuple];
+}
+
 function setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
-    let unique = 1;
     let size = content && content.length || 0;
-    let buffer = Buffer.allocUnsafe(FIXED_BUFFER + size);
+    let buffer = Buffer.allocUnsafe(CLIENT_FIXED_BUFFER + size);
     let offset = 0;
     buffer.writeUInt32LE(<Uint32> (buffer.byteLength), offset);
     offset += 4;
-    // buffer.writeDoubleLE(from, offset);
-    // offset += 8;
-    // buffer.writeDoubleLE(unique, offset);
-    // offset += 8;
     buffer.writeInt32LE(opcode, offset);
     offset += 4;
     buffer.writeUInt8(flag, offset);
@@ -22,26 +34,6 @@ function setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buf
         content.copy(buffer, offset);
     }
     return buffer;
-}
-function buildFixedData(content: Buffer): [number, number, number, number, number, Buffer] {
-    let offset = 0;
-    let size = content.readUInt32LE(offset);
-    offset += 4;
-    // if (size !== content.length) {
-    //     // 校验数据长度
-    //     console.log("消息长度不足");
-    //     throw(new Error("消息长度不足"));
-    // }
-    let from = content.readDoubleLE(offset);
-    offset += 8;
-    let to = content.readDoubleLE(offset);
-    offset += 8;
-    let opcode = content.readUInt32LE(offset);
-    offset += 4;
-    let flag = content.readUInt8(offset);
-    offset += 1;
-    let tuple = content.slice(offset);
-    return [size, from, to, opcode, flag, tuple];
 }
 
 async function main() {
@@ -56,17 +48,18 @@ async function main() {
     };
 
     session.onmessage = (event) => {
-        console.log(event.data);
+        let [opcode, flag, tuple] = buildFixedData(<Buffer>event.data);
+        console.log(MsgpackLite.decode(tuple));
     };
 
     session.onclose = () => {
         console.log("close");
-    };
-    let content = MsgpackLite.encode(["xingwy", "123456"]);
+    }; 
+    let msg: Protocols.CreateUser = ["xingwy", "123456", "author yu", Constants.SexType.Man];
+    let content = MsgpackLite.encode(msg);
     
     setInterval(() => {
-        console.log("send")
-        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.GatewayAuthLogin, 1, content);
+        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.CreateUser, 1, content);
         session.send(buffer);
     },          3000);
     

@@ -254,7 +254,6 @@ export class ClientSession extends Session {
     public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
         // TODO 发送检查
         try {
-            console.log([from, opcode, flag, content])
             let buffer = this.setFixedData(from, opcode, flag, content);
             this._socket.send(buffer);
         } catch (error) {

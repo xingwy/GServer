@@ -38,7 +38,7 @@ declare namespace Protocols {
         name = 2,
         sex = 3,
     }
-    type CreateUser = [string, string, number, number];
+    type CreateUser = [string, string, string, number];
 
     // 官网验证登陆
     const enum GatewayLoginAuthFiends {

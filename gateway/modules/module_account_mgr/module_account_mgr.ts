@@ -60,7 +60,7 @@ export class ModuleAccountMgr extends ModuleMgrBase {
 
     public async createUser(account: string, password: string): Promise<Constants.ResultCode> {
         // 检查重复账号
-        if (this.checkUser(account)) {
+        if (this.existUser(account)) {
             return Constants.ResultCode.ExistUser;
         }
         let uid = GlobelMgr.instance.nextId();

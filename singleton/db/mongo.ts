@@ -76,7 +76,8 @@ export class MongoMgr {
                 return null;
             }
             let data = await collection.findOne(Object.assign(opts,{key}));
-            return Encoding.instance.decode(data.value);
+            // return Encoding.instance.decode(data.value);
+            return JSON.parse(data.value);
         } catch (error) {
             // LOG
         }
@@ -118,7 +119,8 @@ export class MongoMgr {
             }
             // collection.in
             let exist = await this.exist(col, key);
-            let data = Encoding.instance.encode(value);
+            // let data = Encoding.instance.encode(value);
+            let data = JSON.stringify(value);
             if (!exist) {
                 // 插入
                 return await collection.insertOne({key, [field]: data})

@@ -40,13 +40,11 @@ export const Main = async function(core: string) {
 
     process.on("SIGINT", async () => {
         console.log("SIGINT");
-        await ModuleSystem.instance.close();
         await GatewaySystem.instance.close();
     });
 
     process.on("SIGTERM", async () => {
         console.log("SIGTERM");
-        await ModuleSystem.instance.close();
         await GatewaySystem.instance.close();
     });
 };

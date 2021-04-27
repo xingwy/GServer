@@ -12,6 +12,6 @@ export class GlobelMgr {
     }
     // TODO 建立取ID规则
     public nextId(): number {
-        return ++this._nextId;
+        return Date.now();
     }
 }
