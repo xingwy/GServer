@@ -55,7 +55,7 @@ async function main() {
     session.onclose = () => {
         console.log("close");
     }; 
-    let msg: Protocols.CreateUser = ["xingwy", "123456", "author yu", Constants.SexType.Man];
+    let msg: Protocols.CreateUser = ["user1", "123456", "zhangsan", Constants.SexType.Man];
     let content = MsgpackLite.encode(msg);
     
     setInterval(() => {

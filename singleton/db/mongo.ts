@@ -126,7 +126,7 @@ export class MongoMgr {
                 return await collection.insertOne({key, [field]: data})
             } else {
                 // 修改
-                return await collection.findOneAndUpdate({key}, {[field]: data});
+                return await collection.findOneAndUpdate({key}, {$set: {[field]: data}});
             }
         } catch (error) {
             // LOG
@@ -177,16 +177,12 @@ export class MongoMgr {
     }
 
     // to change
-    private async exist(col: string, key: number | string): Promise<boolean> {
+    private async exist(col: string, key: number | string): Promise<any> {
         let collection = this.getCollection(col);
         if (!collection) {
-            return false;
+            return null;
         }
-        return await new Promise((resolve: Function, reject: Function) => {
-            collection.findOne({key: key.toString()}, (result) => {
-                resolve(result);
-            })
-        })
+        return await collection.findOne({key: key.toString()})
     }
 
     private getCollection(col: string): Collection {
