@@ -12,7 +12,7 @@ export class GatewaySystem extends System {
 
     protected _serverAccept: AcceptServer;
     protected _clientAccept: AcceptClient;
-    protected _centerSession: Session;
+    protected _worldSession: Session; 
     // 客户端连接
     protected readonly _clients: Map<Uint64, Session>;
 
@@ -72,6 +72,17 @@ export class GatewaySystem extends System {
             session.unique = unique;
             // 创建连接缓存
             session.open();
+            this.openSession(session);
+        });
+    }
+
+    // 连入世界服服务器 （目前只认为有一个世界） 
+    public connectWorld(host: string, port: number): void {
+        // 连接网关
+        this._serverAccept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
+            session.serviceType = Protocols.ServicType.GatewayServic;
+            this._worldSession = session;
+            this._worldSession.open();
             this.openSession(session);
         });
     }

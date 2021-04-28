@@ -9,6 +9,7 @@ declare namespace Protocols {
         CenterServic = 0x200000,    // 中心服务
         FeatureServic = 0x300000,   // 功能服务
         SystemServic = 0x400000,    // 系统服务
+        WorldServic = 0x500000,     // 世界服务
         Client = 0x900000,          // 客户端类型
     }
 

@@ -395,6 +395,11 @@ export abstract class System {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
                 break;
             }
+            case Protocols.ServicType.WorldServic: {
+                // 客户端服务不操作 不验证先不存映射表
+                this._servicesSession.set(session.serviceType, <ServiceSession> session);
+                break;
+            }
             case Protocols.ServicType.Client: {
                 // 客户端服务不操作 不验证先不存映射表
                 // this._userSessions.set(session.unique, <ServiceSession> session);
