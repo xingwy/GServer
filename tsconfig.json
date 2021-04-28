@@ -23,6 +23,8 @@
         "center/**/*",
         "gateway/*",
         "gateway/**/*",
+        "world/*",
+        "world/**/*",
         "singleton/*",
         "singleton/**/*",
         "test/*",

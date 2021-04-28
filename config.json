@@ -5,10 +5,13 @@
     "tcp": {
         "client": {"host": "127.0.0.1", "port": 10001},
         "gateway": {"host": "127.0.0.1", "port": 10002},
-        "center":  {"host": "127.0.0.1", "port": 10003}
+        "center":  {"host": "127.0.0.1", "port": 10003},
+        "world":  {"host": "127.0.0.1", "port": 10004}
     },
     "http": {
-        "gateway": {"host": "127.0.0.1", "port": 8001}
+        "gateway": {"host": "127.0.0.1", "port": 8001},
+        "center":  {"host": "127.0.0.1", "port": 8002},
+        "world":  {"host": "127.0.0.1", "port": 8003}
     },
     "mongo": {
         "uri": "mongodb://47.98.146.29:27017",

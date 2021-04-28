@@ -87,22 +87,8 @@ GatewaySystem.instance.registerProtocol(
 );
 
 GatewaySystem.instance.registerHttp(
-    Protocols.HttpProtocolPath.CreateAccount,
-    Protocols.RequestType.Post,
-    async function(this: System, query: Object, params: Object): Promise<Object> {
-        // 返回给客户端code
-        // let result = ModuleUserMgr.instance.createUser(account, password, name, sex);
-        return {success: true}
-    },
-);
-
-GatewaySystem.instance.registerHttp(
     Protocols.HttpProtocolPath.Login,
     Protocols.RequestType.Post,
     async function(this: System, query: Object, params: Object): Promise<void> {
-    
-
-        // let result = ModuleUserMgr.instance.createUser(account, password, name, sex);
-
     },
 );
