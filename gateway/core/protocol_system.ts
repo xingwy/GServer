@@ -34,6 +34,7 @@ GatewaySystem.instance.registerProtocol(
             return;
         }
 
+        
         // 认为登录成功， 开启session映射表
         this.setUserSession(userInfo.uid, session);
         // 推动客户端登录成功协议

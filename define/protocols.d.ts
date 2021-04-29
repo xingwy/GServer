@@ -33,6 +33,8 @@ declare namespace Protocols {
         [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth;
         [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply;
         [GatewayProtocolCode.CreateUserToCenterReply]: CreateUserToCenterReply;
+        [GatewayProtocolCode.LoginWorldReply]: LoginWorldReply;
+        
         
         [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
         [CenterProtocolCode.LoginCenter]: LoginCenter;
@@ -78,6 +80,11 @@ declare namespace Protocols {
         code = 0,
     }
     type CreateUserToCenterReply = [number];
+
+    const enum LoginWorldReplyFields {
+        code = 0,
+    }
+    type LoginWorldReply = [number];
     
     const enum GatewayProtocolCode {
         Base = 0x100000,                    // 起始段
@@ -85,6 +92,7 @@ declare namespace Protocols {
         GatewayAuthLogin = 0x100002,        // 网关登录
         LoginCenterReply = 0x100003,        // 登录中心服返回
         CreateUserToCenterReply = 0x100004, // 创建角色返回
+        LoginWorldReply = 0x100005,         // 登录世界服务器返回
         Max = 0x1fffff,
     }
     /************************* gateway end **************************/

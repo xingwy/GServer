@@ -64,7 +64,7 @@ export class WorldSystem extends System {
         this.onSessionOpen(session);
         return session.handle;
     }
-
+ 
     public getGatewayServic(handle: Uint16): Session {
         return this._sessions.get(handle);
     }
@@ -78,7 +78,7 @@ export class WorldSystem extends System {
     }
 
     // 客户端登录到世界服调用  由客户端所连接的网关发来消息
-    public clientConnect(uid: Uint64, session: Session): void{
+    public clientLogin(uid: Uint64, session: Session): void{
         if (this._sessions.has(session.handle)) {
             this._clients.set(uid, session.handle);
         }
