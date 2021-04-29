@@ -3,6 +3,8 @@ import { WorldSystem } from "./core/world_system";
 import { GlobelMgr } from "../singleton/utils/globel";
 
 const CFG = require("../config.json");
+// 注册协议
+require("./core/protocol_system");
 
 export const Main = async function(core: string) {
     // 初始化全局配置

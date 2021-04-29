@@ -25,6 +25,27 @@ declare namespace Protocols {
     }
 
     /*************************** Base start ***************************/
+    
+
+    /*************************** Tuple start ***************************/
+    interface ProtocolsTuple {
+        [GatewayProtocolCode.CreateUser]: CreateUser;
+        [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth;
+        [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply;
+        [GatewayProtocolCode.CreateUserToCenterReply]: CreateUserToCenterReply;
+        
+        [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
+        [CenterProtocolCode.LoginCenter]: LoginCenter;
+
+        [WorldProtocolCode.LoginWorld]: LoginWorld;
+
+        [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
+        [ClientProtocolCode.CreateUserReply]: CreateUserReply;
+        
+    }
+    /*************************** Tuple end ***************************/
+    
+    /************************* gateway start **************************/
     // account password name sex 
     const enum CreateAndLoginUserFields {
         account = 0,
@@ -53,35 +74,6 @@ declare namespace Protocols {
     }
     type LoginCenterReply = [number]
 
-    type CenterLoginInfo = [];
-
-
-    const enum LoginCenterFields {
-        uid = 0,
-    }
-    type LoginCenter = [number]
-    
-    /*************************** Tuple start ***************************/
-    interface ProtocolsTuple {
-        [GatewayProtocolCode.CreateUser]: CreateUser;
-        [GatewayProtocolCode.GatewayAuthLogin]: GatewayLoginAuth;
-        [GatewayProtocolCode.LoginCenterReply]: LoginCenterReply;
-        [GatewayProtocolCode.CreateUserToCenterReply]: CreateUserToCenterReply;
-        
-        [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
-        [CenterProtocolCode.AuthUserLogin]: CenterLoginInfo;
-        [CenterProtocolCode.LoginCenter]: LoginCenter;
-
-        [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
-        [ClientProtocolCode.CreateUserReply]: CreateUserReply;
-        
-    }
-
-    /*************************** Tuple end ***************************/
-
-    /*************************** Code start ***************************/
-    
-    
     const enum CreateUserToCenterReplyFields {
         code = 0,
     }
@@ -95,8 +87,9 @@ declare namespace Protocols {
         CreateUserToCenterReply = 0x100004, // 创建角色返回
         Max = 0x1fffff,
     }
+    /************************* gateway end **************************/
     
-    
+    /************************* center start **************************/
     const enum CreateUserToCenterFields {
         uid = 0,
         name = 1,
@@ -104,14 +97,35 @@ declare namespace Protocols {
     }
     type CreateUserToCenter = [number, string, number];
 
+    const enum LoginCenterFields {
+        uid = 0,
+    }
+    type LoginCenter = [number]
+
     const enum CenterProtocolCode {
         Base = 0x200000,                 // 起始段
         CreateUserToCenter = 0x200001,   // 创建角色 
-        AuthUserLogin = 0x200002,        // 验证角色登录
         LoginCenter = 0x200003,          // 登录中心服务
         Max = 0x2fffff,
     }
+    /************************** center end ***************************/
 
+    /************************* center start **************************/
+    const enum LoginWorldFields {
+        uid = 0,
+        name = 1,
+        sex = 2,
+    }
+    type LoginWorld = [number, string, number];
+
+    const enum WorldProtocolCode {
+        Base = 0x500000,                 // 起始段
+        LoginWorld = 0x500001,           // 登录世界服 
+        Max = 0x5fffff,
+    }
+    /************************** center end ***************************/
+
+    /************************* client start **************************/
     const enum AuthUserLoginReplyFields {
         code = 0,
     }
@@ -132,7 +146,7 @@ declare namespace Protocols {
     const enum ProtocolCode {
         ProtocolsCodeMax = 0xF00000,      
     }
-    /*************************** Code end ***************************/
+    /************************** client end ***************************/
 
     const enum AcceptOperate {
         active = 1,
