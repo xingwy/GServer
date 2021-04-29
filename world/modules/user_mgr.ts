@@ -16,16 +16,19 @@ export class UserMgr {
         this.userMap = new Map<Uint64, BaseInfo>();
     }
 
-    public login(uid: Uint64, info: BaseInfo): void {
+    public login(uid: Uint64, info: BaseInfo): Constants.ResultCode {
         if (!this.userMap.has(uid)) {
             this.userMap.set(uid, info);
         }
+        console.log(this.userMap);
+        return Constants.ResultCode.Success;
     }
 
-    public logout(uid: Uint64): void {
+    public logout(uid: Uint64): Constants.ResultCode {
         if (this.userMap.has(uid)) {
             this.userMap.delete(uid);
         }
+        return Constants.ResultCode.Success;
     }
 
     public getUser(uid: Uint64): BaseInfo {

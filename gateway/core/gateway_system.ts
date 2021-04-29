@@ -80,7 +80,7 @@ export class GatewaySystem extends System {
     public connectWorld(host: string, port: number): void {
         // 连接网关
         this._serverAccept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Protocols.ServicType.GatewayServic;
+            session.serviceType = Protocols.ServicType.WorldServic;
             this._worldSession = session;
             this._worldSession.open();
             this.openSession(session);

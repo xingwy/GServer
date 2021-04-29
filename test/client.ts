@@ -55,11 +55,11 @@ async function main() {
     session.onclose = () => {
         console.log("close");
     }; 
-    let msg: Protocols.CreateUser = ["user1", "123456", "zhangsan", Constants.SexType.Man];
+    let msg: Protocols.GatewayLoginAuth = ["user1", "123456"];
     let content = MsgpackLite.encode(msg);
     
     setInterval(() => {
-        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.CreateUser, 1, content);
+        let buffer = setFixedData(1111, Protocols.GatewayProtocolCode.GatewayAuthLogin, 1, content);
         session.send(buffer);
     },          3000);
     

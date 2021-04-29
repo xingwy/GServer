@@ -33,6 +33,7 @@ CenterSystem.instance.registerWaitProtocol(
             let agent = new Agent(uid);
             await agent.load();
             (<CenterSystem>this).useMap.set(uid, agent);
+            console.log(agent)
         }
         let msg: Protocols.LoginCenterReply = [Constants.ResultCode.Success];
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginCenterReply, token, msg);

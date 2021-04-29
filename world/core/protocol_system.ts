@@ -14,14 +14,15 @@ WorldSystem.instance.registerWaitProtocol(
 
         let user = UserMgr.instance.getUser(uid);
         let userInfo = {name, sex};
+        let code: Constants.ResultCode;
         if (user) {
             // LOG 覆盖登录
-            UserMgr.instance.login(uid, userInfo);
+            code = UserMgr.instance.login(uid, userInfo);
         } else {
             // 正常登录
-            UserMgr.instance.login(uid, userInfo);
+            code = UserMgr.instance.login(uid, userInfo);
         }
 
-        // this.replyProtocol(session, ) LoginWorldReply
+        this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginWorldReply, token, [code]) 
     },
 );

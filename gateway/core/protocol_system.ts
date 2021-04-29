@@ -26,7 +26,7 @@ GatewaySystem.instance.registerProtocol(
         }
         let msg: Protocols.LoginCenter = [userInfo && userInfo.uid]
         let loginCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
-
+        console.log(loginCenterReply)
         let code = loginCenterReply[Protocols.LoginCenterReplyFields.code];
         if (code != Constants.ResultCode.Success) {
             // 登录失败
@@ -34,6 +34,20 @@ GatewaySystem.instance.registerProtocol(
             return;
         }
 
+        let worldServic = this.getServicSession(Protocols.ServicType.WorldServic);
+        console.log(worldServic)
+        if (!worldServic) {
+            // world未连接 
+            return;
+        }
+        let loginWorldReply = await this.invokeProtocol(worldServic, Protocols.WorldProtocolCode.LoginWorld, Protocols.GatewayProtocolCode.LoginWorldReply, msg);
+        code = loginWorldReply[Protocols.LoginWorldReplyFields.code];
+        console.log(loginWorldReply)
+        if (code != Constants.ResultCode.Success) {
+            // 登录失败
+            this.publishProtocol(session, Protocols.ClientProtocolCode.AuthUserLoginReply,[code]);
+            return;
+        }
         
         // 认为登录成功， 开启session映射表
         this.setUserSession(userInfo.uid, session);
