@@ -33,7 +33,7 @@ export abstract class Session {
     public sign: Uint8;
     public handle: Uint32;
     public unique: Uint64;
-    public serviceType: Protocols.ServicType;
+    public serviceType: Constants.ServicType;
 
     public readonly TIMEOUT: number = 180000;
 

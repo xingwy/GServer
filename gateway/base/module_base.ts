@@ -1,12 +1,12 @@
 export class ModuleMgrBase {
-    private _dbKey: Constants.MongoDBKey;
+    private _dbKey: DBModels.MongoDBKey;
     private _modName: Constants.ModuleMgrName;
-    constructor(modName: Constants.ModuleMgrName, dbKey: Constants.MongoDBKey) {
+    constructor(modName: Constants.ModuleMgrName, dbKey: DBModels.MongoDBKey) {
         this._modName = modName;
         this._dbKey = dbKey;
     }
 
-    public get dbKey(): Constants.MongoDBKey {
+    public get dbKey(): DBModels.MongoDBKey {
         return this._dbKey;
     }
 

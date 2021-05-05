@@ -6,10 +6,10 @@ import { ModuleSystem } from "./module_system";
 // 验证登录  大概为 gateway => center(拿数据) => gateway => client
 GatewaySystem.instance.registerProtocol(
     Protocols.GatewayProtocolCode.GatewayAuthLogin,
-    Protocols.SignType.Auth,
-    async function(this: System, session: Session, tuple: Protocols.GatewayLoginAuth): Promise<void> {
-        let account = tuple[Protocols.GatewayLoginAuthFiends.account];
-        let password = tuple[Protocols.GatewayLoginAuthFiends.password];
+    Constants.SignType.Auth,
+    async function(this: System, session: Session, tuple: Protocols.GatewayAuthLogin): Promise<void> {
+        let account = tuple[Protocols.GatewayAuthLoginFields.account];
+        let password = tuple[Protocols.GatewayAuthLoginFields.password];
         // 本地验证 获取到Uid
         let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
         let exist = accountMod.existUser(account);
@@ -19,7 +19,7 @@ GatewaySystem.instance.registerProtocol(
         }
         let userInfo = accountMod.getUser(account);
         // 登录center服务器
-        let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
+        let centerServic = this.getServicSession(Constants.ServicType.CenterServic);
         if (!centerServic) {
             // center未连接 reply
             return;
@@ -34,7 +34,7 @@ GatewaySystem.instance.registerProtocol(
             return;
         }
 
-        let worldServic = this.getServicSession(Protocols.ServicType.WorldServic);
+        let worldServic = this.getServicSession(Constants.ServicType.WorldServic);
         console.log(worldServic)
         if (!worldServic) {
             // world未连接 
@@ -59,7 +59,7 @@ GatewaySystem.instance.registerProtocol(
 
 GatewaySystem.instance.registerProtocol(
     Protocols.GatewayProtocolCode.CreateUser,
-    Protocols.SignType.Auth,
+    Constants.SignType.Auth,
     async function(this: System, session: Session, tuple: Protocols.CreateUser): Promise<void> {
         let account = tuple[Protocols.CreateUserFields.account];
         let password = tuple[Protocols.CreateUserFields.password];
@@ -76,7 +76,7 @@ GatewaySystem.instance.registerProtocol(
         }
         console.log(user)
         // 拿center服务器session
-        let centerServic = this.getServicSession(Protocols.ServicType.CenterServic);
+        let centerServic = this.getServicSession(Constants.ServicType.CenterServic);
         if (!centerServic) {
             // center未连接 reply
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.ServicNotExist]);
@@ -103,7 +103,7 @@ GatewaySystem.instance.registerProtocol(
 
 GatewaySystem.instance.registerHttp(
     Protocols.HttpProtocolPath.Login,
-    Protocols.RequestType.Post,
+    Constants.RequestType.Post,
     async function(this: System, query: Object, params: Object): Promise<void> {
     },
 );

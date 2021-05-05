@@ -34,10 +34,10 @@ export abstract class UserBase {
     public load(): void {
     }
 
-    public fromDB<T extends keyof Constants.DBFieldsType>(record: Constants.DBFieldsType[T]): void {
+    public fromDB<T extends keyof DBModels.DBFieldsType>(record: DBModels.DBFieldsType[T]): void {
     }
 
-    public toDB<T extends keyof Constants.DBFieldsType>(): Constants.DBFieldsType[T] {
+    public toDB<T extends keyof DBModels.DBFieldsType>(): DBModels.DBFieldsType[T] {
         return null;
     }
     

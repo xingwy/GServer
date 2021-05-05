@@ -6,7 +6,7 @@ import { Session } from "../../singleton/network/session";
 // 角色登入世界服 保存其映射的网关
 WorldSystem.instance.registerWaitProtocol(
     Protocols.WorldProtocolCode.LoginWorld,
-    Protocols.SignType.Data,
+    Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.LoginWorld): Promise<void> {
         let uid = tuple[Protocols.LoginWorldFields.uid];
         let name = tuple[Protocols.LoginWorldFields.name];

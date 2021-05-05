@@ -8,7 +8,7 @@ import * as MsgpackLite from "msgpack-lite";
 const UNIQUE_SIZE = 4;
 export abstract class System {
 
-    public get servicType(): Protocols.ServicType {
+    public get servicType(): Constants.ServicType {
         return this._servicType;
     }
 
@@ -16,7 +16,7 @@ export abstract class System {
     public readonly uniqueToSession: Map<Uint64, Session>;
     // 包含连接 断开 连接属性 套接字注册等等
     public readonly _sessions: Slots<Session>;
-    private readonly _servicType: Protocols.ServicType;
+    private readonly _servicType: Constants.ServicType;
     protected readonly _userSessions: Map<Uint64, Session>;
     protected readonly _servicesSession: Map<Uint32, ServiceSession>;
 
@@ -28,8 +28,8 @@ export abstract class System {
 
     private readonly _handlers: Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>;
     private readonly _waitHandlers: Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>;
-    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Protocols.RequestType}>;
-    constructor(serverType: Protocols.ServicType) {
+    private readonly _requestHandlers: Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Constants.RequestType}>;
+    constructor(serverType: Constants.ServicType) {
 
         this._servicType = serverType;
         // 会话管理
@@ -44,7 +44,7 @@ export abstract class System {
         // 事件管理
         this._handlers = new Map<ProtocolCode, {exec: (this: System, session: Session, tuple: any) => void, sign: number}>();
         this._waitHandlers = new Map<ProtocolCode, {exec: (this: System, session: Session, token: Uint32, tuple: any) => void, sign: number}>();
-        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Protocols.RequestType}>();
+        this._requestHandlers = new Map<Protocols.HttpProtocolPath, {exec: (this: System, query: Object, params: Object) => Object, type: Constants.RequestType}>();
     }
 
     public abstract onReceiveProtocol(from: Uint64, opcode: Uint16, flags: Uint8, content: Buffer): boolean;
@@ -59,7 +59,7 @@ export abstract class System {
      * @param handler 处理
      * @returns 
      */
-    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Protocols.RequestType, handler: (this: System, query: Object, params: Object) => Object) {
+    public registerHttp<T extends Protocols.HttpProtocolPath>(path: T, type: Constants.RequestType, handler: (this: System, query: Object, params: Object) => Object) {
         if (this._requestHandlers.has(path)) {
             // TODO_LOG
             return;
@@ -85,7 +85,7 @@ export abstract class System {
         if (this._handlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Protocols.ProtocolCode.ProtocolsCodeMax;
+        let type = opcode & Constants.ProtocolsCodeMax;
         if (this._servicType !== type) {
             //  TODO_LOG 服务类型不一致
         }
@@ -108,7 +108,7 @@ export abstract class System {
         if (this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Protocols.ProtocolCode.ProtocolsCodeMax;
+        let type = opcode & Constants.ProtocolsCodeMax;
         if (this._servicType !== type) {
             // TODO_LOG
         }
@@ -123,7 +123,7 @@ export abstract class System {
     }
 
     // 采用JSON
-    public async handleRequest(path: Protocols.HttpProtocolPath, methon: Protocols.RequestType, query: Object = {}, params: Object = {}): Promise<Object> {
+    public async handleRequest(path: Protocols.HttpProtocolPath, methon: Constants.RequestType, query: Object = {}, params: Object = {}): Promise<Object> {
         if (!this._requestHandlers.has(path)) {
             return null;
         }
@@ -148,10 +148,10 @@ export abstract class System {
             return;
         }
         let handler = this._handlers.get(opcode);
-        if ((handler.sign & from.sign) == Protocols.SignType.Ping) {
+        if ((handler.sign & from.sign) == Constants.SignType.Ping) {
             return;
         }
-        if ((handler.sign & from.sign) != Protocols.SignType.Auth) {
+        if ((handler.sign & from.sign) != Constants.SignType.Auth) {
             if (!from.unique) {
                 // 未经验证
                 return;
@@ -183,7 +183,7 @@ export abstract class System {
             return;
         }
         let handler = this._waitHandlers.get(opcode);
-        if ((handler.sign & from.sign) == Protocols.SignType.Ping) {
+        if ((handler.sign & from.sign) == Constants.SignType.Ping) {
             return;
         }
 
@@ -255,11 +255,11 @@ export abstract class System {
 
         // TODO 消息转发处理
         switch (flags) {
-            case Protocols.MessageType.Push: {
+            case Constants.MessageType.Push: {
                 this.handleProtocol(session, opcode, content);
                 break;
             }
-            case Protocols.MessageType.Wait: {
+            case Constants.MessageType.Wait: {
                 if (content.byteLength < 4) {
                     this.closeSession(session.handle, Infinity);
                     return;
@@ -269,7 +269,7 @@ export abstract class System {
                 this.handleWaitProtocol(session, opcode, token, content.slice(4));
                 break;
             }
-            case Protocols.MessageType.Reply: {
+            case Constants.MessageType.Reply: {
                 if (content.byteLength < 4) {
                     this.closeSession(session.handle, Infinity);
                     return;
@@ -298,7 +298,7 @@ export abstract class System {
                 return;
             }
         }
-        to.receive(this._unique, opcode, Protocols.MessageType.Push, content);
+        to.receive(this._unique, opcode, Constants.MessageType.Push, content);
     }
 
     public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
@@ -338,7 +338,7 @@ export abstract class System {
         if (buffer) {
             buffer.copy(content, offset);
         }
-        to.receive(this._unique, opcode, Protocols.MessageType.Wait, content);
+        to.receive(this._unique, opcode, Constants.MessageType.Wait, content);
         return promise;
     }
 
@@ -368,7 +368,7 @@ export abstract class System {
             buffer.copy(content, offset);
         }
         // 系统回复
-        to.receive(this._unique, opcode, Protocols.MessageType.Reply, content);
+        to.receive(this._unique, opcode, Constants.MessageType.Reply, content);
     }
 
     /**
@@ -379,28 +379,20 @@ export abstract class System {
         session.handle = this._sessions.alloc(session);
         // this.uniqueToSession.set(session.unique, session); 
         switch (session.serviceType) {
-            case Protocols.ServicType.CenterServic: {
+            case Constants.ServicType.CenterServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
                 break;
             } 
-            case Protocols.ServicType.FeatureServic: {
+            case Constants.ServicType.GatewayServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
                 break;
             } 
-            case Protocols.ServicType.GatewayServic: {
-                this._servicesSession.set(session.serviceType, <ServiceSession> session);
-                break;
-            } 
-            case Protocols.ServicType.SystemServic: {
-                this._servicesSession.set(session.serviceType, <ServiceSession> session);
-                break;
-            }
-            case Protocols.ServicType.WorldServic: {
+            case Constants.ServicType.WorldServic: {
                 // 客户端服务不操作 不验证先不存映射表
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
                 break;
             }
-            case Protocols.ServicType.Client: {
+            case Constants.ServicType.Client: {
                 // 客户端服务不操作 不验证先不存映射表
                 // this._userSessions.set(session.unique, <ServiceSession> session);
                 break;
@@ -418,31 +410,19 @@ export abstract class System {
             return null;
         }
         switch (session.serviceType) {
-            case Protocols.ServicType.CenterServic: {
-                if (this._servicesSession.has(session.serviceType)) {
-                    this._servicesSession.delete(session.serviceType);
-                }
-                break;
-            } 
-            case Protocols.ServicType.FeatureServic: {
-                if (this._servicesSession.has(session.serviceType)) {
-                    this._servicesSession.delete(session.serviceType);
-                }
-                break;
-            } 
-            case Protocols.ServicType.GatewayServic: {
-                if (this._servicesSession.has(session.serviceType)) {
-                    this._servicesSession.delete(session.serviceType);
-                }
-                break;
-            } 
-            case Protocols.ServicType.SystemServic: {
+            case Constants.ServicType.CenterServic: {
                 if (this._servicesSession.has(session.serviceType)) {
                     this._servicesSession.delete(session.serviceType);
                 }
                 break;
             }
-            case Protocols.ServicType.Client: {
+            case Constants.ServicType.GatewayServic: {
+                if (this._servicesSession.has(session.serviceType)) {
+                    this._servicesSession.delete(session.serviceType);
+                }
+                break;
+            }
+            case Constants.ServicType.Client: {
                 if (this._userSessions.has(session.unique)) {
                     this._userSessions.delete(session.unique);
                 }
@@ -498,7 +478,7 @@ export abstract class System {
         return this._userSessions.get(uid);
     }
 
-    public getServicSession(servicType: Protocols.ServicType): Session {
+    public getServicSession(servicType: Constants.ServicType): Session {
         return this._servicesSession.get(servicType)
     }
 

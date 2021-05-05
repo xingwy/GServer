@@ -21,7 +21,7 @@ export class GatewaySystem extends System {
     }
     
     constructor() {
-        super(Protocols.ServicType.CenterServic);
+        super(Constants.ServicType.CenterServic);
         this._serverAccept = new AcceptServer(this);
         this._clientAccept = new AcceptClient(this);
         this._clients = new Map<Uint64, Session>();
@@ -49,7 +49,7 @@ export class GatewaySystem extends System {
         this.open(host, port, Constants.ConnectType.Tcp);
 
         // 监听 进程通信
-        this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
+        this._serverAccept.open(host, port, Constants.AcceptOperate.passive, false, (session: Session): void => {
             // 开启启用随机ID
             session.unique = GlobelMgr.instance.nextId();
             // 获取类型 connenction传过来
@@ -62,8 +62,8 @@ export class GatewaySystem extends System {
     public openClient(host: string, port: number): void {
         this.open(host, port, Constants.ConnectType.Tcp);
         // 监听 客户端连接
-        this._clientAccept.open(host, port, Protocols.AcceptOperate.passive, false, async (session: Session): Promise<void> => {
-            session.serviceType = Protocols.ServicType.Client;
+        this._clientAccept.open(host, port, Constants.AcceptOperate.passive, false, async (session: Session): Promise<void> => {
+            session.serviceType = Constants.ServicType.Client;
             // TODO 采用用户ID 登陆时加入map
             let {code, unique} = await LoginAction.instance.login();
             if (code != Constants.ResultCode.Success) {
@@ -79,8 +79,8 @@ export class GatewaySystem extends System {
     // 连入世界服服务器 （目前只认为有一个世界） 
     public connectWorld(host: string, port: number): void {
         // 连接网关
-        this._serverAccept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Protocols.ServicType.WorldServic;
+        this._serverAccept.open(host, port, Constants.AcceptOperate.active, false, (session: Session) => {
+            session.serviceType = Constants.ServicType.WorldServic;
             this._worldSession = session;
             this._worldSession.open();
             this.openSession(session);

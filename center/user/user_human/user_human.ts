@@ -21,18 +21,18 @@ export class UserHuman extends UserBase {
     public ontimer(ts: number): void {
     }
 
-    public fromDB<T extends keyof Constants.DBFieldsType>(record: Constants.DBFieldsType[T]): void {
+    public fromDB<T extends keyof DBModels.DBFieldsType>(record: DBModels.DBFieldsType[T]): void {
         if (!record) {
             return;
         }
-        let data = <Constants.UserSocial>record;
-        this._name = data[Constants.UserSocialFields.name];
-        this._level = data[Constants.UserSocialFields.level];
-        this._sex = data[Constants.UserSocialFields.sex];
+        let data = <DBModels.UserSocial>record;
+        this._name = data[DBModels.UserSocialFields.name];
+        this._level = data[DBModels.UserSocialFields.level];
+        this._sex = data[DBModels.UserSocialFields.sex];
     }
 
-    public toDB<T extends keyof Constants.DBFieldsType>(): Constants.DBFieldsType[T] {
-        let data: Constants.UserSocial = [this._name, this._level, this._sex];
+    public toDB<T extends keyof DBModels.DBFieldsType>(): DBModels.DBFieldsType[T] {
+        let data: DBModels.UserSocial = [this._name, this._level, this._sex];
         return data as any;
     }
 

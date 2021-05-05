@@ -17,7 +17,7 @@ export class WorldSystem extends System {
     }
     
     constructor() {
-        super(Protocols.ServicType.CenterServic);
+        super(Constants.ServicType.CenterServic);
         this._serverAccept = new AcceptServer(this);
         this._clients = new Map<Uint64, Uint16>();
     }
@@ -43,7 +43,7 @@ export class WorldSystem extends System {
         this.open(host, port, Constants.ConnectType.Tcp);
 
         // 开启监听 等待网关连接
-        this._serverAccept.open(host, port, Protocols.AcceptOperate.passive, false, (session: Session): void => {
+        this._serverAccept.open(host, port, Constants.AcceptOperate.passive, false, (session: Session): void => {
             session.unique = GlobelMgr.instance.nextId();
             // 获取类型 connenction传过来
             // 创建连接 加入事件处理

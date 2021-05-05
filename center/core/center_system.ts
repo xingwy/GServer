@@ -17,7 +17,7 @@ export class CenterSystem extends System {
     }
     
     constructor() {
-        super(Protocols.ServicType.CenterServic);
+        super(Constants.ServicType.CenterServic);
         this._accept = new AcceptServer(this);
         this._userMap = new Map<Uint32, Agent>();
     }
@@ -46,8 +46,8 @@ export class CenterSystem extends System {
     public open(host: string, port: number): void {
         super.open(host, port, Constants.ConnectType.Tcp);
         // 连接网关
-        this._accept.open(host, port, Protocols.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Protocols.ServicType.GatewayServic;
+        this._accept.open(host, port, Constants.AcceptOperate.active, false, (session: Session) => {
+            session.serviceType = Constants.ServicType.GatewayServic;
             this._gateSession = session;
             this._gateSession.open();
             this.openSession(session);

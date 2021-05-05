@@ -9,35 +9,35 @@ interface IUserInfo {
 
 export class ModuleAccountMgr extends ModuleMgrBase {
     private _accountMap: Map<string, IUserInfo>;
-    constructor(modName: Constants.ModuleMgrName, dbKey: Constants.MongoDBKey) {
+    constructor(modName: Constants.ModuleMgrName, dbKey: DBModels.MongoDBKey) {
         super(modName, dbKey);
         this._accountMap = new Map<string, IUserInfo>();
     }
 
-    public fromDB<T extends keyof Constants.DBFieldsType>(record: Constants.DBFieldsType[T]): void {
+    public fromDB<T extends keyof DBModels.DBFieldsType>(record: DBModels.DBFieldsType[T]): void {
         if (!record) {
             return;
         }
 
-        let data = <Constants.Accounts>record;
-        let list = data[Constants.AccountsFields.list];
+        let data = <DBModels.Accounts>record;
+        let list = data[DBModels.AccountsFields.list];
         if (list) {
             for (let v of list) {
-                this._accountMap.set(v[Constants.AccountFields.account], {
-                        account: v[Constants.AccountFields.account], 
-                        password: v[Constants.AccountFields.password],
-                        uid: v[Constants.AccountFields.uid],
+                this._accountMap.set(v[DBModels.AccountFields.account], {
+                        account: v[DBModels.AccountFields.account], 
+                        password: v[DBModels.AccountFields.password],
+                        uid: v[DBModels.AccountFields.uid],
                     });
             }
         }
     }
 
-    public toDB<T extends keyof Constants.DBFieldsType>(): Constants.DBFieldsType[T] {
-        let data: Constants.Accounts = [new Array<Constants.Account>()];
+    public toDB<T extends keyof DBModels.DBFieldsType>(): DBModels.DBFieldsType[T] {
+        let data: DBModels.Accounts = [new Array<DBModels.Account>()];
         for (let [_, v] of this._accountMap) {
-            data[Constants.AccountsFields.list].push([v.account, v.password, v.uid]);
+            data[DBModels.AccountsFields.list].push([v.account, v.password, v.uid]);
         }
-        return <Constants.DBFieldsType[T]>data;
+        return <DBModels.DBFieldsType[T]>data;
     }
 
     public checkUser(account: string): boolean {

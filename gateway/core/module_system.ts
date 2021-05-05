@@ -19,7 +19,7 @@ export class ModuleSystem {
 
     public async init(): Promise<void> {
         // 注册模块 初始化等
-        this.register(Constants.ModuleMgrName.AccountMgr, new ModuleAccountMgr(Constants.ModuleMgrName.AccountMgr, Constants.MongoDBKey.AccountMgr))
+        this.register(Constants.ModuleMgrName.AccountMgr, new ModuleAccountMgr(Constants.ModuleMgrName.AccountMgr, DBModels.MongoDBKey.AccountMgr))
 
         // 加载模块
         await this.load();

@@ -55,7 +55,7 @@ async function main() {
     session.onclose = () => {
         console.log("close");
     }; 
-    let msg: Protocols.GatewayLoginAuth = ["user1", "123456"];
+    let msg: Protocols.GatewayAuthLogin = ["user1", "123456"];
     let content = MsgpackLite.encode(msg);
     
     setInterval(() => {

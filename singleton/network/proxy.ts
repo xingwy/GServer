@@ -38,7 +38,7 @@ export class Proxy {
             let query = u.searchParams;
             if (req.method == "GET") {
                 // 路由分发 TODO 调用系统分发器
-                let result = await this.system.handleRequest(path as Protocols.HttpProtocolPath, Protocols.RequestType.Get, query);
+                let result = await this.system.handleRequest(path as Protocols.HttpProtocolPath, Constants.RequestType.Get, query);
                 // 暂时这样设计
                 res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
                 res.end(result);
@@ -56,7 +56,7 @@ export class Proxy {
                     } catch (error) {
                         data = buffer.toString();
                     }
-                    let result = await this.system.handleRequest(path as Protocols.HttpProtocolPath, Protocols.RequestType.Post, query, data);
+                    let result = await this.system.handleRequest(path as Protocols.HttpProtocolPath, Constants.RequestType.Post, query, data);
                     // 暂时这样设计
                     res.writeHead(200, {'Content-Type': 'application/json;charset=utf-8'});
                     res.end(JSON.stringify(result || {}));

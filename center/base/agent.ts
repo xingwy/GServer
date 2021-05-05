@@ -22,9 +22,9 @@ export class Agent extends IAgent {
     }
 
     public moduleInit(): void {
-        this._modules.set(Constants.ModuleName.Bag, new UserBag(this, Constants.MongoDBKey.Bag));
-        this._modules.set(Constants.ModuleName.Human, new UserHuman(this, Constants.MongoDBKey.Bag));
-        // this.resiter(Constants.EventID.Login, "xxx", this._modules.get(Constants.ModuleName.Bag))
+        this._modules.set(Constants.ModuleName.Bag, new UserBag(this, DBModels.MongoDBKey.Bag));
+        this._modules.set(Constants.ModuleName.Human, new UserHuman(this, DBModels.MongoDBKey.Bag));
+        // this.resiter(Constants.EventID.Login, "xxx", this._modules.get(DBModels.ModuleName.Bag))
 
     }
 

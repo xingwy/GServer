@@ -29,9 +29,9 @@ abstract class Accept {
         return this._state;
     }
 
-    public open(host: string, port: number, operate: Protocols.AcceptOperate, flag: boolean, callback: (session: Session) => void): void {
+    public open(host: string, port: number, operate: Constants.AcceptOperate, flag: boolean, callback: (session: Session) => void): void {
         let session;
-        if (operate === Protocols.AcceptOperate.active) {
+        if (operate === Constants.AcceptOperate.active) {
             // 连接模式
             this._state = Constants.AcceptState.connecting;
             this._address = {address: host, port, family: ""};

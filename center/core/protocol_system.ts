@@ -6,7 +6,7 @@ import { Session } from "../../singleton/network/session";
 // 创角  gateway调用center 创建user基础数据， uid在gateway生成，创角色成功保存 account <=> uid 映射表
 CenterSystem.instance.registerWaitProtocol(
     Protocols.CenterProtocolCode.CreateUserToCenter,
-    Protocols.SignType.Data,
+    Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.CreateUserToCenter): Promise<void> {
         let uid = tuple[Protocols.CreateUserToCenterFields.uid]
         let name = tuple[Protocols.CreateUserToCenterFields.name];
@@ -23,7 +23,7 @@ CenterSystem.instance.registerWaitProtocol(
 // 验证登录  大概为 gateway => center(拿数据) => gateway => client
 CenterSystem.instance.registerWaitProtocol(
     Protocols.CenterProtocolCode.LoginCenter,
-    Protocols.SignType.Data,
+    Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.LoginCenter): Promise<void> {
         let uid = tuple[Protocols.LoginCenterFields.uid];
         if ((<CenterSystem>this).useMap.has(uid)) {
