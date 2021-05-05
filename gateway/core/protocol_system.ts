@@ -11,7 +11,7 @@ GatewaySystem.instance.registerProtocol(
         let account = tuple[Protocols.GatewayAuthLoginFields.account];
         let password = tuple[Protocols.GatewayAuthLoginFields.password];
         // 本地验证 获取到Uid
-        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.AccountMgr);
         let exist = accountMod.existUser(account);
         if (!exist) {
             this.publishProtocol(session, Protocols.ClientProtocolCode.AuthUserLoginReply, [Constants.ResultCode.UserNotExist]); 
@@ -67,7 +67,7 @@ GatewaySystem.instance.registerProtocol(
         let sex = tuple[Protocols.CreateUserFields.sex];
 
         // 检测account是否存在
-        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.AccountMgr);
         let user = accountMod.getUser(account);
         if (user) {
             // 已存在

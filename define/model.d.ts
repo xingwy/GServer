@@ -2,7 +2,7 @@
  * 数据库字段段映射模型文件
  */
 
- declare namespace DBModels {
+declare namespace DBModels {
 
     // 账号模型
     const enum AccountFields {

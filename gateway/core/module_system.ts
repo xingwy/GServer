@@ -12,14 +12,14 @@ export class ModuleSystem {
         return this._instance;
     }
     // 管理器集合
-    private _cols: Map<Constants.ModuleMgrName, ModuleMgrBase>;
+    private _cols: Map<Constants.ModuleName, ModuleMgrBase>;
     constructor() {
-        this._cols = new Map<Constants.ModuleMgrName, ModuleMgrBase>();
+        this._cols = new Map<Constants.ModuleName, ModuleMgrBase>();
     }
 
     public async init(): Promise<void> {
         // 注册模块 初始化等
-        this.register(Constants.ModuleMgrName.AccountMgr, new ModuleAccountMgr(Constants.ModuleMgrName.AccountMgr, DBModels.MongoDBKey.AccountMgr))
+        this.register(Constants.ModuleName.AccountMgr, new ModuleAccountMgr(Constants.ModuleName.AccountMgr, DBModels.MongoDBKey.AccountMgr))
 
         // 加载模块
         await this.load();
@@ -73,7 +73,7 @@ export class ModuleSystem {
     }
 
     // 注册模块
-    public register(modName: Constants.ModuleMgrName, mgr: ModuleMgrBase): void {
+    public register(modName: Constants.ModuleName, mgr: ModuleMgrBase): void {
         if (this._cols.has(modName)) {
             return;
         }

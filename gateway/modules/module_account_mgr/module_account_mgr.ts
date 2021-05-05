@@ -9,7 +9,7 @@ interface IUserInfo {
 
 export class ModuleAccountMgr extends ModuleMgrBase {
     private _accountMap: Map<string, IUserInfo>;
-    constructor(modName: Constants.ModuleMgrName, dbKey: DBModels.MongoDBKey) {
+    constructor(modName: Constants.ModuleName, dbKey: DBModels.MongoDBKey) {
         super(modName, dbKey);
         this._accountMap = new Map<string, IUserInfo>();
     }

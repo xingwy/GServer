@@ -13,7 +13,7 @@ export class LoginAction {
     // 验证登陆 已有才会成功
     public async login(): Promise<{code: number, unique: number}> {
 
-        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleMgrName.AccountMgr);
+        let accountMod = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.AccountMgr);
         
 
         return {code: 0, unique: 1}
