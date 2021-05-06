@@ -248,12 +248,21 @@ export abstract class System {
         if (session === null) {
             return;
         }
+        let targetType = opcode & Constants.ProtocolsCodeAuth;
+        
+        // 检查是不是本服务的消息且为网关类型转发操作
+        if (targetType != this.servicType && this.servicType == Constants.ServicType.GatewayServic) {
+            // 判断是否是客户端协议（目的地）
+            if (targetType == Constants.ServicType.Client) {
+                this.route(handle, to, opcode, flags, content);
+            } else {
+                this.route(handle, targetType, opcode, flags, content);
+            }
+            return;
+        }
 
-        // if (!this.onReceiveProtocol(from, opcode, flags, content)) {
-        //     // TODO 关闭session
-        // }
+        // TODO ？其他非网关服务发送 ， 是否也需要做路由功能，暂不设计，后面考虑抽出自动路由功能
 
-        // TODO 消息转发处理
         switch (flags) {
             case Constants.MessageType.Push: {
                 this.handleProtocol(session, opcode, content);
@@ -283,6 +292,42 @@ export abstract class System {
                 break;
             }   
         }
+    }
+
+    /**
+     * 
+     * @param handle socket句柄
+     * @param to 目标ID/暂不使用 根据opcode判定
+     * @param opcode 协议码
+     * @param flags 验证标志
+     * @param content 内容
+     */
+    private route(handle: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
+        let targetType = opcode & Constants.ProtocolsCodeAuth;
+        let session: Session;
+        switch (targetType) {
+            case Constants.ServicType.WorldServic: {
+                // 世界服消息
+            }
+            break;
+            case Constants.ServicType.CenterServic: {
+                // 世界服消息
+            }
+            break;
+            case Constants.ServicType.Client: {
+
+            };
+            break;
+
+            default:
+                // LOG ERROR
+        }
+        if (!session) {
+            // LOG ERROR 找不到目标服务
+            return;
+        }
+        // 发送给目标session 这里暂时传入handle 待优化重构：传入源头ID
+        session.receive(handle, opcode, flags, content);
     }
 
     public publishProtocol(to: Session, opcode: Uint32, data: any): void {
