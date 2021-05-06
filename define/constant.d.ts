@@ -1,7 +1,9 @@
 declare namespace Constants { 
 
-    const ProtocolsCodeMax = 0xFFFFFF;
-    const ProtocolsCodeAuth = 0xF00000;
+    const enum ProtocolsCode {
+        Auth = 0xF00000,
+        Max = 0xFFFFFF,
+    }
     const enum ServicType {
         GatewayServic = 0x100000,   // 网关服务
         CenterServic = 0x200000,    // 中心服务

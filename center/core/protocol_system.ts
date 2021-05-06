@@ -39,3 +39,18 @@ CenterSystem.instance.registerWaitProtocol(
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginCenterReply, token, msg);
     }
 );
+
+// 测试 world服发给center服务器
+CenterSystem.instance.registerProtocol(
+    Protocols.CenterProtocolCode.WorldSendToCenter,
+    Constants.SignType.Data,
+    async function(this: System, session: Session, tuple: Protocols.WorldSendToCenter): Promise<void> {
+        console.log("WorldSendToCenter", tuple);
+    }
+);
+
+// 测试路由连接
+setInterval(() => {
+    let gateway = CenterSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
+    CenterSystem.instance.publishProtocol(gateway, Protocols.WorldProtocolCode.CenterSendToWorld, [1]);
+}, 3000)

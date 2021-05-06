@@ -17,7 +17,7 @@ export class WorldSystem extends System {
     }
     
     constructor() {
-        super(Constants.ServicType.CenterServic);
+        super(Constants.ServicType.WorldServic);
         this._serverAccept = new AcceptServer(this);
         this._clients = new Map<Uint64, Uint16>();
     }
@@ -44,10 +44,11 @@ export class WorldSystem extends System {
 
         // 开启监听 等待网关连接
         this._serverAccept.open(host, port, Constants.AcceptOperate.passive, false, (session: Session): void => {
-            session.unique = GlobelMgr.instance.nextId();
+            // session.unique = GlobelMgr.instance.nextId(); 后面扩展多服 传uid
             // 获取类型 connenction传过来
             // 创建连接 加入事件处理
             session.open();
+            session.unique = session.serviceType;
             this.openSession(session);
         });
     }
@@ -59,11 +60,11 @@ export class WorldSystem extends System {
     }
 
     // 重写openSession 
-    public openSession(session: Session): Uint16 {
-        session.handle = this._sessions.alloc(session);
-        this.onSessionOpen(session);
-        return session.handle;
-    }
+    // public openSession(session: Session): Uint16 {
+    //     session.handle = this._sessions.alloc(session);
+    //     this.onSessionOpen(session);
+    //     return session.handle;
+    // }
  
     public getGatewayServic(handle: Uint16): Session {
         return this._sessions.get(handle);

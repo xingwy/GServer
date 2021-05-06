@@ -52,6 +52,12 @@ declare namespace Protocols {
     }
     type LoginCenter = [number];
 
+    // 世界服发往中心服
+    const enum WorldSendToCenterFields {
+        code = 0,
+    }
+    type WorldSendToCenter = [number];
+
     // 登录到世界服
     const enum LoginWorldFields {
         uid = 0,
@@ -59,6 +65,12 @@ declare namespace Protocols {
         sex = 2,
     }
     type LoginWorld = [number, string, number];
+
+    // 中心服发往世界服
+    const enum CenterSendToWorldFields {
+        code = 0,
+    }
+    type CenterSendToWorld = [number];
 
     // 用户登录返回
     const enum AuthUserLoginReplyFields {
@@ -99,10 +111,12 @@ declare namespace Protocols {
     const enum CenterProtocolCode {
         CreateUserToCenter = 0x200001,  // 创建角色（To Center）
         LoginCenter = 0x200002,  // 网关登录验证
+        WorldSendToCenter = 0x200003,  // 世界服发往中心服
     }
 
     const enum WorldProtocolCode {
         LoginWorld = 0x300001,  // 登录到世界服
+        CenterSendToWorld = 0x300002,  // 中心服发往世界服
     }
 
     const enum ClientProtocolCode {
@@ -123,7 +137,9 @@ declare namespace Protocols {
         [GatewayProtocolCode.LoginWorldReply]: LoginWorldReply;
         [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
         [CenterProtocolCode.LoginCenter]: LoginCenter;
+        [CenterProtocolCode.WorldSendToCenter]: WorldSendToCenter;
         [WorldProtocolCode.LoginWorld]: LoginWorld;
+        [WorldProtocolCode.CenterSendToWorld]: CenterSendToWorld;
         [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
         [ClientProtocolCode.CreateUserReply]: CreateUserReply;
     }

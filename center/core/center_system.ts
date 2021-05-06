@@ -20,6 +20,7 @@ export class CenterSystem extends System {
         super(Constants.ServicType.CenterServic);
         this._accept = new AcceptServer(this);
         this._userMap = new Map<Uint32, Agent>();
+        this._unique = Constants.ServicType.GatewayServic;
     }
 
     public get useMap(): Map<Uint32, Agent> {
@@ -50,6 +51,7 @@ export class CenterSystem extends System {
             session.serviceType = Constants.ServicType.GatewayServic;
             this._gateSession = session;
             this._gateSession.open();
+            session.unique = Constants.ServicType.GatewayServic;
             this.openSession(session);
         });
     }

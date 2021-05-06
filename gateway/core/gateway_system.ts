@@ -21,7 +21,7 @@ export class GatewaySystem extends System {
     }
     
     constructor() {
-        super(Constants.ServicType.CenterServic);
+        super(Constants.ServicType.GatewayServic);
         this._serverAccept = new AcceptServer(this);
         this._clientAccept = new AcceptClient(this);
         this._clients = new Map<Uint64, Session>();
@@ -83,6 +83,7 @@ export class GatewaySystem extends System {
             session.serviceType = Constants.ServicType.WorldServic;
             this._worldSession = session;
             this._worldSession.open();
+            session.unique = Constants.ServicType.WorldServic;
             this.openSession(session);
         });
     }

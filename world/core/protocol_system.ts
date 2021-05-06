@@ -26,3 +26,13 @@ WorldSystem.instance.registerWaitProtocol(
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginWorldReply, token, [code]) 
     },
 );
+
+
+// 测试 world服发给center服务器
+WorldSystem.instance.registerProtocol(
+    Protocols.WorldProtocolCode.CenterSendToWorld,
+    Constants.SignType.Data,
+    async function(this: System, session: Session, tuple: Protocols.CenterSendToWorld): Promise<void> {
+        console.log("CenterSendToWorld", tuple);
+    }
+);

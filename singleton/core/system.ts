@@ -85,7 +85,7 @@ export abstract class System {
         if (this._handlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Constants.ProtocolsCodeMax;
+        let type = opcode & Constants.ProtocolsCode.Max;
         if (this._servicType !== type) {
             //  TODO_LOG 服务类型不一致
         }
@@ -108,7 +108,7 @@ export abstract class System {
         if (this._waitHandlers.has(opcode)) {
             // TODO_LOG
         }
-        let type = opcode & Constants.ProtocolsCodeMax;
+        let type = opcode & Constants.ProtocolsCode.Max;
         if (this._servicType !== type) {
             // TODO_LOG
         }
@@ -148,6 +148,7 @@ export abstract class System {
             return;
         }
         let handler = this._handlers.get(opcode);
+
         if ((handler.sign & from.sign) == Constants.SignType.Ping) {
             return;
         }
@@ -244,12 +245,12 @@ export abstract class System {
      */
     public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let session = this.uniqueToSession.get(from);
+        console.log(this.uniqueToSession.keys())
         // let session = this._sessions.get(handle);
-        if (session === null) {
+        if (session == null) {
             return;
         }
-        let targetType = opcode & Constants.ProtocolsCodeAuth;
-        
+        let targetType = opcode & Constants.ProtocolsCode.Auth;
         // 检查是不是本服务的消息且为网关类型转发操作
         if (targetType != this.servicType && this.servicType == Constants.ServicType.GatewayServic) {
             // 判断是否是客户端协议（目的地）
@@ -292,25 +293,26 @@ export abstract class System {
 
     /**
      * 
-     * @param handle socket句柄
-     * @param to 目标ID/暂不使用 根据opcode判定
+     * @param from 源socket句柄
+     * @param to 目标socket句柄
      * @param opcode 协议码
      * @param flags 验证标志
      * @param content 内容
      */
     private route(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
-        let targetType = opcode & Constants.ProtocolsCodeAuth;
+        let targetType = opcode & Constants.ProtocolsCode.Auth;
         let session: Session;
         switch (targetType) {
             case Constants.ServicType.WorldServic: {
                 // 世界服消息
-                session = this.getSessionByUnique(to);
+                session = this.getServicSession(Constants.ServicType.WorldServic);
             }
             break;
             
             case Constants.ServicType.CenterServic: {
                 // 世界服消息
-                session = this.getSessionByUnique(to);
+                session = this.getServicSession(Constants.ServicType.CenterServic);
+                session.receive(from, to, opcode, flags, content);
             }
             break;
 
@@ -328,7 +330,7 @@ export abstract class System {
             return;
         }
         // 发送给目标session 这里暂时传入handle 待优化重构：传入源头ID
-        session.receive(from, to, opcode, flags, content);
+        session.receive(Constants.ServicType.GatewayServic, to, opcode, flags, content);
     }
 
     public publishProtocol(to: Session, opcode: Uint32, data: any): void {
@@ -345,7 +347,7 @@ export abstract class System {
             }
         }
         // 系统通信 ID使用服务类型
-        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Push, content);
+        to.receive(this.servicType, to.unique, opcode, Constants.MessageType.Push, content);
     }
 
     public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
