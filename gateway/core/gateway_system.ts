@@ -51,10 +51,10 @@ export class GatewaySystem extends System {
         // 监听 进程通信
         this._serverAccept.open(host, port, Constants.AcceptOperate.passive, false, (session: Session): void => {
             // 开启启用随机ID
-            session.unique = GlobelMgr.instance.nextId();
             // 获取类型 connenction传过来
             // 创建连接 加入事件处理
             session.open();
+            session.unique = session.serviceType;
             this.openSession(session);
         });
     }
@@ -69,7 +69,7 @@ export class GatewaySystem extends System {
             if (code != Constants.ResultCode.Success) {
                 return;
             }
-            session.unique = unique;
+            // session.unique = unique;
             // 创建连接缓存
             session.open();
             this.openSession(session);

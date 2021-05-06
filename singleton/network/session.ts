@@ -107,7 +107,7 @@ export abstract class Session {
      */
     public abstract onSocketMessage(event: WebSocket.MessageEvent): void;
 
-    public abstract receive(from: SessionId, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<Constants.ResultCode>; 
+    public abstract receive(from: Uint64, to: Uint64, opcode: ProtocolCode, flag: Uint8, content: Buffer): Promise<Constants.ResultCode>; 
 
     /**
      * 广播
@@ -166,17 +166,18 @@ export class ServiceSession extends Session {
                 console.log("数据长度不足");
                 return;
             }
+            // 系统消息 包含from to
             let [from, to, opcode, flag, tuple] = this.buildFixedData(content);
-            this._system.receiveProtocol(this.handle, to, opcode, flag, tuple);
+            this._system.receiveProtocol(from, to, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }
     }
 
-    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
+    public async receive(from: Uint64, to: Uint64, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
         // TODO 发送检查
         try {
-            let buffer = this.setFixedData(from, opcode, flag, content);
+            let buffer = this.setFixedData(from, to, opcode, flag, content);
             this._socket.send(buffer);
         } catch (error) {
             console.log(error);
@@ -206,7 +207,7 @@ export class ServiceSession extends Session {
         return [from, to, opcode, flag, tuple];
     }
     
-    public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
+    public setFixedData(from: Uint64, to: Uint64, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {
         let size = content && content.length || 0;
         let buffer = Buffer.allocUnsafe(SERVER_FIXED_BUFFER + size);
         let offset = 0;
@@ -214,7 +215,7 @@ export class ServiceSession extends Session {
         offset += 4;
         buffer.writeDoubleLE(from, offset);
         offset += 8;
-        buffer.writeDoubleLE(this.unique, offset);
+        buffer.writeDoubleLE(to, offset);
         offset += 8;
         buffer.writeInt32LE(opcode, offset);
         offset += 4;
@@ -243,6 +244,7 @@ export class ClientSession extends Session {
                 console.log("数据长度不足");
                 return;
             }
+            // 也需要包含from/to 用来追源使用
             let [opcode, flag, tuple] = this.buildFixedData(content);
             
             this._system.receiveProtocol(this.handle, 0, opcode, flag, tuple);
@@ -251,7 +253,7 @@ export class ClientSession extends Session {
         }
     }
 
-    public async receive(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
+    public async receive(from: SessionId, to: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Promise<Constants.ResultCode> {
         // TODO 发送检查
         try {
             let buffer = this.setFixedData(from, opcode, flag, content);

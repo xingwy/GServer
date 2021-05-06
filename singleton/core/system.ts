@@ -242,9 +242,9 @@ export abstract class System {
      * @param token token标识
      * @param content 数据内容
      */
-    public receiveProtocol(handle: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
-        // let session = this.uniqueToSession.get(from);
-        let session = this._sessions.get(handle);
+    public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
+        let session = this.uniqueToSession.get(from);
+        // let session = this._sessions.get(handle);
         if (session === null) {
             return;
         }
@@ -253,11 +253,7 @@ export abstract class System {
         // 检查是不是本服务的消息且为网关类型转发操作
         if (targetType != this.servicType && this.servicType == Constants.ServicType.GatewayServic) {
             // 判断是否是客户端协议（目的地）
-            if (targetType == Constants.ServicType.Client) {
-                this.route(handle, to, opcode, flags, content);
-            } else {
-                this.route(handle, targetType, opcode, flags, content);
-            }
+            this.route(from, to, opcode, flags, content);
             return;
         }
 
@@ -302,20 +298,25 @@ export abstract class System {
      * @param flags 验证标志
      * @param content 内容
      */
-    private route(handle: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
+    private route(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let targetType = opcode & Constants.ProtocolsCodeAuth;
         let session: Session;
         switch (targetType) {
             case Constants.ServicType.WorldServic: {
                 // 世界服消息
+                session = this.getSessionByUnique(to);
             }
             break;
+            
             case Constants.ServicType.CenterServic: {
                 // 世界服消息
+                session = this.getSessionByUnique(to);
             }
             break;
-            case Constants.ServicType.Client: {
 
+            case Constants.ServicType.Client: {
+                // to 目标角色ID
+                session = this.getSessionByUnique(to);
             };
             break;
 
@@ -327,7 +328,7 @@ export abstract class System {
             return;
         }
         // 发送给目标session 这里暂时传入handle 待优化重构：传入源头ID
-        session.receive(handle, opcode, flags, content);
+        session.receive(from, to, opcode, flags, content);
     }
 
     public publishProtocol(to: Session, opcode: Uint32, data: any): void {
@@ -343,7 +344,8 @@ export abstract class System {
                 return;
             }
         }
-        to.receive(this._unique, opcode, Constants.MessageType.Push, content);
+        // 系统通信 ID使用服务类型
+        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Push, content);
     }
 
     public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
@@ -383,12 +385,12 @@ export abstract class System {
         if (buffer) {
             buffer.copy(content, offset);
         }
-        to.receive(this._unique, opcode, Constants.MessageType.Wait, content);
+        // 系统通信 ID使用服务类型
+        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Wait, content);
         return promise;
     }
 
     public replyProtocol(to: Session, opcode: Uint32, token: Uint32, data: any): any {
-        
         if (!to) {
             console.log("reply session 失效");
             return;
@@ -412,8 +414,8 @@ export abstract class System {
         if (buffer) {
             buffer.copy(content, offset);
         }
-        // 系统回复
-        to.receive(this._unique, opcode, Constants.MessageType.Reply, content);
+        // 系统通信 ID使用服务类型
+        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Reply, content);
     }
 
     /**
@@ -421,8 +423,8 @@ export abstract class System {
      * @param session 
      */
     public openSession(session: Session): Uint16 {
-        session.handle = this._sessions.alloc(session);
-        // this.uniqueToSession.set(session.unique, session); 
+        // session.handle = this._sessions.alloc(session);
+        this.uniqueToSession.set(session.unique, session); 
         switch (session.serviceType) {
             case Constants.ServicType.CenterServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);
@@ -449,8 +451,8 @@ export abstract class System {
         return session.handle;
     }
 
-    public closeSession(handle: Uint32, reason: Constants.ResultCode): Session {
-        let session = this._sessions.get(handle);
+    public closeSession(unique: Uint32, reason: Constants.ResultCode): Session {
+        let session = this._sessions.get(unique);
         if (!session) {
             return null;
         }
@@ -468,16 +470,16 @@ export abstract class System {
                 break;
             }
             case Constants.ServicType.Client: {
-                if (this._userSessions.has(session.unique)) {
-                    this._userSessions.delete(session.unique);
-                }
-                break;
+                // if (this.uniqueToSession.has(session.unique)) {
+                //     this.uniqueToSession.delete(session.unique);
+                // }
+                // break;
             }
             default:
                 break; 
         }
-        // this.uniqueToSession.delete(session.unique);
-        this._sessions.free(handle);
+        this.uniqueToSession.delete(session.unique);
+        this._sessions.free(session.handle);
         session.close();
         return session;
         
@@ -516,11 +518,11 @@ export abstract class System {
     }
 
     public setUserSession(uid: Uint64, session: Session): void {
-        this._userSessions.set(uid, session);
+        this.uniqueToSession.set(uid, session)
     }
 
     public getUserSession(uid: Uint64): Session {
-        return this._userSessions.get(uid);
+        return this.uniqueToSession.get(uid);
     }
 
     public getServicSession(servicType: Constants.ServicType): Session {
