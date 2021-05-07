@@ -52,10 +52,14 @@ export abstract class Session {
             let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
             let param = u.searchParams;
             let servicType = param.get("servicType");
+            let unique = param.get("unique");
+            console.log(param)
             // todo 传入token 防止恶意攻击
             if (servicType) {
+                this.unique = Number(unique);
                 this.serviceType = Number(servicType);
             }
+            console.log(servicType, unique)
         }
 
     }

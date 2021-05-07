@@ -22,7 +22,7 @@ export abstract class System {
 
     protected readonly _tokens: Slots<TokenSession>;
     protected readonly _tokensHeap: Heap<TokenSession>;
-    protected _unique: Uint64 = 0;
+    public unique: Uint64 = 0;
 
     protected _httpServer: Proxy;
 
@@ -388,7 +388,7 @@ export abstract class System {
             buffer.copy(content, offset);
         }
         // 系统通信 ID使用服务类型
-        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Wait, content);
+        to.receive(this.unique, to.unique, opcode, Constants.MessageType.Wait, content);
         return promise;
     }
 
@@ -417,7 +417,7 @@ export abstract class System {
             buffer.copy(content, offset);
         }
         // 系统通信 ID使用服务类型
-        to.receive(this._unique, to.unique, opcode, Constants.MessageType.Reply, content);
+        to.receive(this.unique, to.unique, opcode, Constants.MessageType.Reply, content);
     }
 
     /**

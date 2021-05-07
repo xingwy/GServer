@@ -56,6 +56,7 @@ export class GatewaySystem extends System {
             session.open();
             session.unique = session.serviceType;
             this.openSession(session);
+            console.log()
         });
     }
 
@@ -80,11 +81,13 @@ export class GatewaySystem extends System {
     public connectWorld(host: string, port: number): void {
         // 连接网关
         this._serverAccept.open(host, port, Constants.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Constants.ServicType.WorldServic;
             this._worldSession = session;
             this._worldSession.open();
-            session.unique = Constants.ServicType.WorldServic;
+            // 目标网关的unique取自group
+            session.serviceType = Constants.ServicType.WorldServic;
+            this._worldSession.unique = GlobelMgr.instance.worldId + Constants.ServicType.WorldServic;
             this.openSession(session);
+            console.log(this.uniqueToSession.keys())
         });
     }
 

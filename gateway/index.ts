@@ -9,8 +9,10 @@ require("./core/protocol_system");
 
 export const Main = async function(core: string) {
     // 初始化全局配置
-    let groupId = CFG.group.id;
-    GlobelMgr.instance.groupId = groupId;
+    GlobelMgr.instance.init(CFG);
+
+    // 初始化配置
+    GatewaySystem.instance.unique = GlobelMgr.instance.gateId + Constants.ServicType.GatewayServic;
     // 初始化中心系统cd b   
     let gate = CFG.tcp.gateway;
     let world = CFG.tcp.world;

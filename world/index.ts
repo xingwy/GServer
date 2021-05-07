@@ -8,8 +8,11 @@ require("./core/protocol_system");
 
 export const Main = async function(core: string) {
     // 初始化全局配置
-    let groupId = CFG.group.id;
-    GlobelMgr.instance.groupId = groupId;
+    GlobelMgr.instance.init(CFG);
+
+    // 初始化系统配置
+    WorldSystem.instance.unique = GlobelMgr.instance.worldId + Constants.ServicType.WorldServic;
+    
     // 初始化中心系统cd b   
     let world = CFG.tcp.world;
     // 开启网关连接  提供服务进程连接

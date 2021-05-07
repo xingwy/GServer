@@ -48,8 +48,8 @@ export class WorldSystem extends System {
             // 获取类型 connenction传过来
             // 创建连接 加入事件处理
             session.open();
-            session.unique = session.serviceType;
             this.openSession(session);
+            console.log(this.uniqueToSession.keys());
         });
     }
 

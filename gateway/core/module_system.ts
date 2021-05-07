@@ -53,7 +53,7 @@ export class ModuleSystem {
         try {
             for (let [_, mgr] of this._cols) {
                 let data = mgr.toDB();
-                await MongoMgr.instance.hset(mgr.dbKey, GlobelMgr.instance.groupId, data);
+                await MongoMgr.instance.hset(mgr.dbKey, GlobelMgr.instance.gateId, data);
             }
         } catch (error) {
             console.log(error)

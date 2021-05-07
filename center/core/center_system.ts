@@ -2,6 +2,7 @@ import { Agent } from "../base/agent";
 import { System } from "../../singleton/core/system";
 import { Session } from "../../singleton/network/session";
 import { AcceptServer } from "../../singleton/network/accept";
+import { GlobelMgr } from "../../singleton/utils/globel";
 
 export class CenterSystem extends System {
 
@@ -20,7 +21,7 @@ export class CenterSystem extends System {
         super(Constants.ServicType.CenterServic);
         this._accept = new AcceptServer(this);
         this._userMap = new Map<Uint32, Agent>();
-        this._unique = Constants.ServicType.GatewayServic;
+        
     }
 
     public get useMap(): Map<Uint32, Agent> {
@@ -51,8 +52,9 @@ export class CenterSystem extends System {
             session.serviceType = Constants.ServicType.GatewayServic;
             this._gateSession = session;
             this._gateSession.open();
-            session.unique = Constants.ServicType.GatewayServic;
+            session.unique = Constants.ServicType.GatewayServic + GlobelMgr.instance.gateId;
             this.openSession(session);
+            console.log(this.uniqueToSession.keys())
         });
     }
 
