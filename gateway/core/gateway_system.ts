@@ -3,7 +3,6 @@ import { Session } from "../../singleton/network/session";
 import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
 import { Proxy } from "../../singleton/network/proxy";
 import { GlobelMgr } from "../../singleton/utils/globel";
-import { LoginAction } from "../actions/login_action"; 
 import { ModuleSystem } from "./module_system";
 
 export class GatewaySystem extends System {
@@ -63,11 +62,7 @@ export class GatewaySystem extends System {
         // 监听 客户端连接
         this._clientAccept.open(host, port, Constants.AcceptOperate.passive, false, async (session: Session): Promise<void> => {
             session.serviceType = Constants.ServicType.Client;
-            // TODO 采用用户ID 登陆时加入map
-            let {code, unique} = await LoginAction.instance.login();
-            if (code != Constants.ResultCode.Success) {
-                return;
-            }
+            // TODO 采用用户ID 登陆时加入map 仅是连接
             // session.unique = unique;
             // 创建连接缓存
             session.open();

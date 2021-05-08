@@ -153,8 +153,8 @@ declare namespace Protocols {
     }
 
     const enum HttpProtocolPath {
-        Create = "/user/Create",  // 客户端创建账号
-        Login = "/user/Login",  // 客户端登录账号
+        Create = "/user/create",  // 客户端创建账号
+        Login = "/user/login",  // 客户端登录账号
     }
 
     interface ProtocolsTuple {

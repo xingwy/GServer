@@ -182,7 +182,7 @@ export class MongoMgr {
         if (!collection) {
             return null;
         }
-        return await collection.findOne({key: key.toString()})
+        return await collection.findOne({key: key})
     }
 
     private getCollection(col: string): Collection {

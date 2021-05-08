@@ -521,7 +521,7 @@ export abstract class System {
     }
 
     public setUserSession(uid: Uint64, session: Session): void {
-        this.uniqueToSession.set(uid, session)
+        this.uniqueToSession.set(uid, session);
     }
 
     public getUserSession(uid: Uint64): Session {
