@@ -54,9 +54,7 @@ export class GatewaySystem extends System {
             // 获取类型 connenction传过来
             // 创建连接 加入事件处理
             session.open();
-            session.unique = session.serviceType;
             this.openSession(session);
-            console.log()
         });
     }
 
@@ -87,13 +85,11 @@ export class GatewaySystem extends System {
             session.serviceType = Constants.ServicType.WorldServic;
             this._worldSession.unique = GlobelMgr.instance.worldId + Constants.ServicType.WorldServic;
             this.openSession(session);
-            console.log(this.uniqueToSession.keys())
         });
     }
 
     public openHttpServer(host: string, port: number): void {
 -        this._httpServer.open(host, port, () => {
-            console.log(`open http port: ${host}: ${port}`)
             this.open(host, port, Constants.ConnectType.Http);
         })
     }

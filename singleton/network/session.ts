@@ -53,13 +53,11 @@ export abstract class Session {
             let param = u.searchParams;
             let servicType = param.get("servicType");
             let unique = param.get("unique");
-            console.log(param)
             // todo 传入token 防止恶意攻击
             if (servicType) {
                 this.unique = Number(unique);
                 this.serviceType = Number(servicType);
             }
-            console.log(servicType, unique)
         }
 
     }
@@ -251,7 +249,7 @@ export class ClientSession extends Session {
             // 也需要包含from/to 用来追源使用
             let [opcode, flag, tuple] = this.buildFixedData(content);
             
-            this._system.receiveProtocol(this.handle, 0, opcode, flag, tuple);
+            this._system.receiveProtocol(this.unique, 0, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }

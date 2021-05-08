@@ -49,7 +49,6 @@ export class WorldSystem extends System {
             // 创建连接 加入事件处理
             session.open();
             this.openSession(session);
-            console.log(this.uniqueToSession.keys());
         });
     }
 

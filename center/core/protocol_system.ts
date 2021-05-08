@@ -49,8 +49,19 @@ CenterSystem.instance.registerProtocol(
     }
 );
 
+CenterSystem.instance.registerWaitProtocol(
+    Protocols.CenterProtocolCode.WaitWorldSendToCenter,
+    Constants.SignType.Data,
+    async function(this: System, session: Session, token: Uint32, tuple: Protocols.WaitWorldSendToCenter): Promise<void> {
+        console.log(tuple)
+        this.replyProtocol(session, Protocols.WorldProtocolCode.WaitWorldSendToCenterReply, token, [3]);
+    }
+);
+
 // 测试路由连接
-setInterval(() => {
-    let gateway = CenterSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
-    CenterSystem.instance.publishProtocol(gateway, Protocols.WorldProtocolCode.CenterSendToWorld, [1]);
+setInterval(async () => {
+    // let gateway = CenterSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
+    
+    // let data = await CenterSystem.instance.invokeProtocol(gateway, Protocols.WorldProtocolCode.WaitCenterSendToWorld, Protocols.CenterProtocolCode.WaitCenterSendToWorldReply, [1]);
+    // console.log(data)
 }, 3000)

@@ -58,6 +58,18 @@ declare namespace Protocols {
     }
     type WorldSendToCenter = [number];
 
+    // 世界服发往中心服
+    const enum WaitWorldSendToCenterFields {
+        code = 0,
+    }
+    type WaitWorldSendToCenter = [number];
+
+    // 世界服发往中心服 reply
+    const enum WaitCenterSendToWorldReplyFields {
+        code = 0,
+    }
+    type WaitCenterSendToWorldReply = [number];
+
     // 登录到世界服
     const enum LoginWorldFields {
         uid = 0,
@@ -71,6 +83,18 @@ declare namespace Protocols {
         code = 0,
     }
     type CenterSendToWorld = [number];
+
+    // 中心服发往世界服
+    const enum WaitWorldSendToCenterReplyFields {
+        code = 0,
+    }
+    type WaitWorldSendToCenterReply = [number];
+
+    // 中心服发往世界服 wait协议
+    const enum WaitCenterSendToWorldFields {
+        code = 0,
+    }
+    type WaitCenterSendToWorld = [number];
 
     // 用户登录返回
     const enum AuthUserLoginReplyFields {
@@ -112,11 +136,15 @@ declare namespace Protocols {
         CreateUserToCenter = 0x200001,  // 创建角色（To Center）
         LoginCenter = 0x200002,  // 网关登录验证
         WorldSendToCenter = 0x200003,  // 世界服发往中心服
+        WaitWorldSendToCenter = 0x200004,  // 世界服发往中心服
+        WaitCenterSendToWorldReply = 0x200005,  // 世界服发往中心服 reply
     }
 
     const enum WorldProtocolCode {
         LoginWorld = 0x300001,  // 登录到世界服
         CenterSendToWorld = 0x300002,  // 中心服发往世界服
+        WaitWorldSendToCenterReply = 0x300003,  // 中心服发往世界服
+        WaitCenterSendToWorld = 0x300004,  // 中心服发往世界服 wait协议
     }
 
     const enum ClientProtocolCode {
@@ -138,8 +166,12 @@ declare namespace Protocols {
         [CenterProtocolCode.CreateUserToCenter]: CreateUserToCenter;
         [CenterProtocolCode.LoginCenter]: LoginCenter;
         [CenterProtocolCode.WorldSendToCenter]: WorldSendToCenter;
+        [CenterProtocolCode.WaitWorldSendToCenter]: WaitWorldSendToCenter;
+        [CenterProtocolCode.WaitCenterSendToWorldReply]: WaitCenterSendToWorldReply;
         [WorldProtocolCode.LoginWorld]: LoginWorld;
         [WorldProtocolCode.CenterSendToWorld]: CenterSendToWorld;
+        [WorldProtocolCode.WaitWorldSendToCenterReply]: WaitWorldSendToCenterReply;
+        [WorldProtocolCode.WaitCenterSendToWorld]: WaitCenterSendToWorld;
         [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
         [ClientProtocolCode.CreateUserReply]: CreateUserReply;
     }

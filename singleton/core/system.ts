@@ -245,6 +245,7 @@ export abstract class System {
      */
     public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let session = this.uniqueToSession.get(from);
+        console.log([from, to, opcode, flags])
         console.log(this.uniqueToSession.keys())
         // let session = this._sessions.get(handle);
         if (session == null) {
@@ -302,6 +303,7 @@ export abstract class System {
     private route(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let targetType = opcode & Constants.ProtocolsCode.Auth;
         let session: Session;
+        console.log([from, to, opcode, flags])
         switch (targetType) {
             case Constants.ServicType.WorldServic: {
                 // 世界服消息
@@ -312,7 +314,6 @@ export abstract class System {
             case Constants.ServicType.CenterServic: {
                 // 世界服消息
                 session = this.getServicSession(Constants.ServicType.CenterServic);
-                session.receive(from, to, opcode, flags, content);
             }
             break;
 
@@ -330,7 +331,7 @@ export abstract class System {
             return;
         }
         // 发送给目标session 这里暂时传入handle 待优化重构：传入源头ID
-        session.receive(Constants.ServicType.GatewayServic, to, opcode, flags, content);
+        session.receive(this.unique, to, opcode, flags, content);
     }
 
     public publishProtocol(to: Session, opcode: Uint32, data: any): void {
@@ -347,7 +348,7 @@ export abstract class System {
             }
         }
         // 系统通信 ID使用服务类型
-        to.receive(this.servicType, to.unique, opcode, Constants.MessageType.Push, content);
+        to.receive(this.unique, to.unique, opcode, Constants.MessageType.Push, content);
     }
 
     public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
