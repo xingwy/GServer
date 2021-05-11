@@ -36,3 +36,21 @@ WorldSystem.instance.registerProtocol(
         console.log("CenterSendToWorld", tuple);
     }
 );
+
+// 测试 world服发给center服务器
+WorldSystem.instance.registerWaitProtocol(
+    Protocols.WorldProtocolCode.WaitCenterSendToWorld,
+    Constants.SignType.Data,
+    async function(this: System, session: Session, token: Uint32, tuple: Protocols.WaitCenterSendToWorld): Promise<void> {
+        console.log(tuple)
+        this.replyProtocol(session, Protocols.CenterProtocolCode.WaitCenterSendToWorldReply, token, [2]) 
+    },
+);
+
+// 测试路由连接
+setInterval(async () => {
+    let gateway = WorldSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
+    
+    let data = await WorldSystem.instance.invokeProtocol(gateway, Protocols.CenterProtocolCode.WaitWorldSendToCenter, Protocols.WorldProtocolCode.WaitWorldSendToCenterReply, [4]);
+    console.log(data)
+}, 3000)

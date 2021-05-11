@@ -20,7 +20,7 @@
         "admin": "yu",
         "passward": "123456",
         "opts": {
-
+            "useUnifiedTopology": true
         }
     },
     "token":"123123123123123"

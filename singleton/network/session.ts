@@ -46,22 +46,6 @@ export abstract class Session {
         this.sign = 0xff;
         this._socket = socket;
         this._system = system;
-        if (request) {
-            this._address = request.socket.remoteAddress;
-            this._port = request.socket.remotePort;   
-            let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
-            let param = u.searchParams;
-            let servicType = param.get("servicType");
-            let unique = param.get("unique");
-            console.log(param)
-            // todo 传入token 防止恶意攻击
-            if (servicType) {
-                this.unique = Number(unique);
-                this.serviceType = Number(servicType);
-            }
-            console.log(servicType, unique)
-        }
-
     }
     // SOCKET 开启
     public open(): void {
@@ -160,6 +144,19 @@ export class ServiceSession extends Session {
     public readonly userSession: Set<Session>;
     constructor(system: System, socket: WebSocket, request: http.IncomingMessage) {
         super(system, socket, request);
+        if (request) {
+            this._address = request.socket.remoteAddress;
+            this._port = request.socket.remotePort;   
+            let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
+            let param = u.searchParams;
+            let servicType = param.get("servicType");
+            let unique = param.get("unique");
+            // todo 传入token 防止恶意攻击
+            if (servicType) {
+                this.unique = Number(unique);
+                this.serviceType = Number(servicType);
+            }
+        }
     }
 
     public onSocketMessage(event: WebSocket.MessageEvent): void {
@@ -234,11 +231,27 @@ export class ServiceSession extends Session {
 
 export class ClientSession extends Session {
     private _agent: IAgent;
+    public vaild: boolean = false;
     public get agent(): IAgent {
         return this._agent;
     }
     public set agent(agent: IAgent) {
         this._agent = agent;
+    }
+
+    constructor (system: System, socket: WebSocket, request: http.IncomingMessage) {
+        super(system, socket, request);
+        if (request) {
+            this._address = request.socket.remoteAddress;
+            this._port = request.socket.remotePort;   
+            let u = new url.URL(request.url, `http://${this._address}:${this._port}/`);
+            let param = u.searchParams;
+            let account = param.get("account");
+            let password = param.get("password");
+            // todo 传入token 防止恶意攻击
+            // this.account = account;
+            // this.password = password;
+        }
     }
     public onSocketMessage(event: WebSocket.MessageEvent): void {
         let content = <Buffer> event.data;
@@ -249,9 +262,16 @@ export class ClientSession extends Session {
                 return;
             }
             // 也需要包含from/to 用来追源使用
+            // 验证检查
             let [opcode, flag, tuple] = this.buildFixedData(content);
+            // 没有通过验证  允许发送验证协议
+            if (flag != Constants.SignType.Auth && !this.vaild) {
+                console.log("角色为验证");
+                // 是否需要回复
+                return;
+            }
             
-            this._system.receiveProtocol(this.handle, 0, opcode, flag, tuple);
+            this._system.receiveProtocol(this.unique, 0, opcode, flag, tuple);
         } catch (error) {
             console.log(error);
         }

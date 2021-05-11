@@ -5,10 +5,6 @@ import { Event } from "../structs/event";
 export abstract class IAgent extends Event {
     private _agentId: number;
 
-    public set agentId(agentId: number) {
-        this._agentId = agentId;
-    }
-
     public get agentId(): number {
         return this._agentId;
     }

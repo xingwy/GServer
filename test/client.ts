@@ -37,7 +37,7 @@ function setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buf
 }
 
 async function main() {
-    let session = new WebSocket(`ws://127.0.0.1:10001`);
+    let session = new WebSocket(`ws://127.0.0.1:10001?account=xingwy&password=123456`);
 
     session.onopen = (s) => {
         // console.log(s);

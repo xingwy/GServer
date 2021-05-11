@@ -21,7 +21,6 @@ export class CenterSystem extends System {
         super(Constants.ServicType.CenterServic);
         this._accept = new AcceptServer(this);
         this._userMap = new Map<Uint32, Agent>();
-        
     }
 
     public get useMap(): Map<Uint32, Agent> {
