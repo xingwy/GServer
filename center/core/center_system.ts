@@ -49,12 +49,11 @@ export class CenterSystem extends System {
         super.open(host, port, Constants.ConnectType.Tcp);
         // 连接网关
         this._accept.open(host, port, Constants.AcceptOperate.active, false, (session: Session) => {
-            session.serviceType = Constants.ServicType.GatewayServic;
             this._gateSession = session;
             this._gateSession.open();
+            session.serviceType = Constants.ServicType.GatewayServic;
             session.unique = Constants.ServicType.GatewayServic + GlobelMgr.instance.gateId;
             this.openSession(session);
-            console.log(this.uniqueToSession.keys())
         });
     }
 

@@ -52,5 +52,6 @@ CenterSystem.instance.registerProtocol(
 // 测试路由连接
 setInterval(() => {
     let gateway = CenterSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
+    console.log("send")
     CenterSystem.instance.publishProtocol(gateway, Protocols.WorldProtocolCode.CenterSendToWorld, [1]);
 }, 3000)

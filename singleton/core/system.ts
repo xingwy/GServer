@@ -5,6 +5,7 @@ import { Proxy } from "../network/proxy";
 import * as Http from "http";
 import * as Tool from "../utils/tool";
 import * as MsgpackLite from "msgpack-lite";
+import { GlobelMgr } from "../utils/globel";
 const UNIQUE_SIZE = 4;
 export abstract class System {
 
@@ -245,7 +246,7 @@ export abstract class System {
      */
     public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let session = this.uniqueToSession.get(from);
-        console.log(this.uniqueToSession.keys())
+        console.log([from, to, opcode])
         // let session = this._sessions.get(handle);
         if (session == null) {
             return;
@@ -302,16 +303,19 @@ export abstract class System {
     private route(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let targetType = opcode & Constants.ProtocolsCode.Auth;
         let session: Session;
+        console.log([from,to,opcode,flags])
+        console.log(this.uniqueToSession.keys());
+        console.log(Constants.ServicType.WorldServic + GlobelMgr.instance.worldId, Constants.ServicType.CenterServic + GlobelMgr.instance.gateId)
         switch (targetType) {
             case Constants.ServicType.WorldServic: {
                 // 世界服消息
-                session = this.getServicSession(Constants.ServicType.WorldServic);
+                session = this.getSessionByUnique(Constants.ServicType.WorldServic + GlobelMgr.instance.worldId);
             }
             break;
             
             case Constants.ServicType.CenterServic: {
-                // 世界服消息
-                session = this.getServicSession(Constants.ServicType.CenterServic);
+                // 中心服消息
+                session = this.getSessionByUnique(Constants.ServicType.CenterServic + GlobelMgr.instance.gateId);
                 session.receive(from, to, opcode, flags, content);
             }
             break;
@@ -325,6 +329,7 @@ export abstract class System {
             default:
                 // LOG ERROR
         }
+        
         if (!session) {
             // LOG ERROR 找不到目标服务
             return;
@@ -347,7 +352,7 @@ export abstract class System {
             }
         }
         // 系统通信 ID使用服务类型
-        to.receive(this.servicType, to.unique, opcode, Constants.MessageType.Push, content);
+        to.receive(this.unique, to.unique, opcode, Constants.MessageType.Push, content);
     }
 
     public invokeProtocol(to: Session, opcode: Uint32, reply: Uint32, data: any): any {
