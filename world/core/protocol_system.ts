@@ -1,6 +1,6 @@
 import { WorldSystem } from "./world_system";
 import { System } from "../../singleton/core/system";
-import { UserMgr, BaseInfo } from "../modules/user_mgr";
+import { UserMgr, BaseInfo } from "../modules/user/user_mgr";
 import { Session } from "../../singleton/network/session";
 
 // 角色登入世界服 保存其映射的网关

@@ -1,10 +1,11 @@
+import { BaseMgr } from "../../base/base_mgr";
 
 export interface BaseInfo {
     name: string;
     sex: number;
 }
 
-export class UserMgr {
+export class UserMgr extends BaseMgr{
 
     private static _instance: UserMgr = new UserMgr();
     private readonly userMap: Map<Uint64, BaseInfo>; 
@@ -13,6 +14,7 @@ export class UserMgr {
         return this._instance
     }
     constructor() {
+        super();
         this.userMap = new Map<Uint64, BaseInfo>();
     }
 
