@@ -63,8 +63,15 @@ declare namespace Constants {
         connected,
         closed,
     }
+
     const enum AcceptType {
         server = 1,
         client = 2,
-    } 
+    }
+
+    const enum ChannelType {
+        broadcast = 1,  // 广播
+        union = 2,   // 工会
+        team = 3,   // 队伍
+    }
 }

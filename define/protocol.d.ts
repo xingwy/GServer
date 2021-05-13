@@ -78,6 +78,15 @@ declare namespace Protocols {
     }
     type LoginWorld = [number, string, number];
 
+    // 聊天消息
+    const enum SendChatFields {
+        sender = 0,
+        channel = 1,
+        uids = 2,
+        content = 3,
+    }
+    type SendChat = [number, number, Array<number>, string];
+
     // 中心服发往世界服
     const enum CenterSendToWorldFields {
         code = 0,
@@ -142,9 +151,10 @@ declare namespace Protocols {
 
     const enum WorldProtocolCode {
         LoginWorld = 0x300001,  // 登录到世界服
-        CenterSendToWorld = 0x300002,  // 中心服发往世界服
-        WaitWorldSendToCenterReply = 0x300003,  // 中心服发往世界服
-        WaitCenterSendToWorld = 0x300004,  // 中心服发往世界服 wait协议
+        SendChat = 0x300002,  // 聊天消息
+        CenterSendToWorld = 0x300003,  // 中心服发往世界服
+        WaitWorldSendToCenterReply = 0x300004,  // 中心服发往世界服
+        WaitCenterSendToWorld = 0x300005,  // 中心服发往世界服 wait协议
     }
 
     const enum ClientProtocolCode {
@@ -153,8 +163,8 @@ declare namespace Protocols {
     }
 
     const enum HttpProtocolPath {
-        Create = "/user/create",  // 客户端创建账号
-        Login = "/user/login",  // 客户端登录账号
+        Create = "/user/Create",  // 客户端创建账号
+        Login = "/user/Login",  // 客户端登录账号
     }
 
     interface ProtocolsTuple {
@@ -169,6 +179,7 @@ declare namespace Protocols {
         [CenterProtocolCode.WaitWorldSendToCenter]: WaitWorldSendToCenter;
         [CenterProtocolCode.WaitCenterSendToWorldReply]: WaitCenterSendToWorldReply;
         [WorldProtocolCode.LoginWorld]: LoginWorld;
+        [WorldProtocolCode.SendChat]: SendChat;
         [WorldProtocolCode.CenterSendToWorld]: CenterSendToWorld;
         [WorldProtocolCode.WaitWorldSendToCenterReply]: WaitWorldSendToCenterReply;
         [WorldProtocolCode.WaitCenterSendToWorld]: WaitCenterSendToWorld;

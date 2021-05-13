@@ -27,6 +27,16 @@ WorldSystem.instance.registerWaitProtocol(
     },
 );
 
+WorldSystem.instance.registerProtocol(
+    Protocols.WorldProtocolCode.SendChat,
+    Constants.SignType.Data,
+    async function(this: System, session: Session, tuple: Protocols.SendChat): Promise<void> {
+        let sender = tuple[Protocols.SendChatFields.sender];
+        let channel = tuple[Protocols.SendChatFields.channel];
+        let content = tuple[Protocols.SendChatFields.content];
+        let uids = tuple[Protocols.SendChatFields.uids];
+    }
+);
 
 // 测试 world服发给center服务器
 WorldSystem.instance.registerProtocol(
