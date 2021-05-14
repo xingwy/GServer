@@ -31,5 +31,16 @@ export class WorldUserMgr extends BaseMgr {
 
     public getUser(uid: Uint64): BaseInfo {
         return this.userMap.get(uid);
-    } 
+    }
+
+    public fromDB<T extends keyof DBModels.DBFieldsType>(record: DBModels.DBFieldsType[T]): void {
+        if (!record) {
+            return;
+        }
+    }
+
+    public toDB<T extends keyof DBModels.DBFieldsType>(): DBModels.DBFieldsType[T] {
+        return null;
+    }
+
 }

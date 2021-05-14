@@ -36,10 +36,27 @@ declare namespace DBModels {
     }
     type Bag = [];
 
+    // 聊天记录
+    const enum ChatRecordFields {
+        sender = 0,  // 发送者ID
+        channel = 1,  // 频道类型
+        content = 2,  // 内容
+        receiver = 3,  // 接收者
+    }
+    type ChatRecord = [number, number, string, number];
+
+    // 频道聊天记录
+    const enum ChatRecordsFields {
+        channel = 0,  // 频道
+        records = 1,  // 频道聊天记录
+    }
+    type ChatRecords = [number, Array<ChatRecord>];
+
     // 世界服聊天
     const enum WorldChatMgrFields {
+        chatRecords = 0,  // 所有聊天记录
     }
-    type WorldChatMgr = [];
+    type WorldChatMgr = [Array<ChatRecords>];
 
     // 世界服用户
     const enum WorldUserMgrFields {

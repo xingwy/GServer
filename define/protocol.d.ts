@@ -82,10 +82,10 @@ declare namespace Protocols {
     const enum SendChatFields {
         sender = 0,
         channel = 1,
-        uids = 2,
+        receiver = 2,
         content = 3,
     }
-    type SendChat = [number, number, Array<number>, string];
+    type SendChat = [number, number, number, string];
 
     // 中心服发往世界服
     const enum CenterSendToWorldFields {
