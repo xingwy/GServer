@@ -1,7 +1,7 @@
 import { WorldSystem } from "./world_system";
 import { System } from "../../singleton/core/system";
-import { UserMgr, BaseInfo } from "../modules/user/user_mgr";
 import { Session } from "../../singleton/network/session";
+import { ModuleSystem } from "./module_system";
 
 // 角色登入世界服 保存其映射的网关
 WorldSystem.instance.registerWaitProtocol(
@@ -12,15 +12,16 @@ WorldSystem.instance.registerWaitProtocol(
         let name = tuple[Protocols.LoginWorldFields.name];
         let sex = tuple[Protocols.LoginWorldFields.sex];
 
-        let user = UserMgr.instance.getUser(uid);
+        let worldUserMgr = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.WorldUserMgr)
+        let user = worldUserMgr.getUser(uid);
         let userInfo = {name, sex};
         let code: Constants.ResultCode;
         if (user) {
             // LOG 覆盖登录
-            code = UserMgr.instance.login(uid, userInfo);
+            code = worldUserMgr.login(uid, userInfo);
         } else {
             // 正常登录
-            code = UserMgr.instance.login(uid, userInfo);
+            code = worldUserMgr.login(uid, userInfo);
         }
 
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginWorldReply, token, [code]) 

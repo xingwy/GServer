@@ -51,6 +51,9 @@ declare namespace Constants {
         Human = "ModuleHuman",
         Bag = "ModuleBag",
         AccountMgr = "AccountMgr",
+
+        WorldUserMgr = "WorldUserMgr",
+        WorldChatMgr = "WorldChatMgr",
     }
 
     const enum ConnectType {

@@ -1,13 +1,10 @@
 import { ChatRecord } from "./record";
-
-export class ChatMgr {
-    private static _instance: ChatMgr = new ChatMgr();
-
-    public static get instance(): ChatMgr {
-        return this._instance
-    }
+import { BaseMgr } from "../../base/base_mgr";
+export class WorldChatMgr extends BaseMgr {
+    
     private chatRecord: Map<Constants.ChannelType, ChatRecord>;
-    constructor() {
+    constructor(modName: Constants.ModuleName, dbKey: DBModels.MongoDBKey) {
+        super(modName, dbKey);
     }
 
     public handleChat(sender: number, channel: Constants.ChannelType, uids: Array<number>): void {

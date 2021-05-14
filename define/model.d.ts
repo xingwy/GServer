@@ -36,11 +36,23 @@ declare namespace DBModels {
     }
     type Bag = [];
 
+    // 世界服聊天
+    const enum WorldChatMgrFields {
+    }
+    type WorldChatMgr = [];
+
+    // 世界服用户
+    const enum WorldUserMgrFields {
+    }
+    type WorldUserMgr = [];
+
     const enum MongoDBKey {
         AccountMgr = "AccountMgr",
         UserSocial = "UserSocial",
         Human = "Human",
         Bag = "Bag",
+        WorldChatMgr = "WorldChatMgr",
+        WorldUserMgr = "WorldUserMgr",
     }
 
     interface DBFieldsType {
@@ -48,5 +60,7 @@ declare namespace DBModels {
         [MongoDBKey.UserSocial]: UserSocial;
         [MongoDBKey.Human]: Human;
         [MongoDBKey.Bag]: Bag;
+        [MongoDBKey.WorldChatMgr]: WorldChatMgr;
+        [MongoDBKey.WorldUserMgr]: WorldUserMgr;
     }
 }

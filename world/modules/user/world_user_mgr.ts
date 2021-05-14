@@ -5,16 +5,12 @@ export interface BaseInfo {
     sex: number;
 }
 
-export class UserMgr extends BaseMgr{
+export class WorldUserMgr extends BaseMgr {
 
-    private static _instance: UserMgr = new UserMgr();
     private readonly userMap: Map<Uint64, BaseInfo>; 
 
-    public static get instance(): UserMgr {
-        return this._instance
-    }
-    constructor() {
-        super();
+    constructor(modName: Constants.ModuleName, dbKey: DBModels.MongoDBKey) {
+        super(modName, dbKey);
         this.userMap = new Map<Uint64, BaseInfo>();
     }
 
