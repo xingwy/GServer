@@ -117,6 +117,12 @@ declare namespace Protocols {
     }
     type CreateUserReply = [number];
 
+    // 聊天返回
+    const enum SendChatReplyFields {
+        code = 0,
+    }
+    type SendChatReply = [number];
+
     // 客户端创建账号
     const enum CreateFields {
         account = 0,
@@ -160,6 +166,7 @@ declare namespace Protocols {
     const enum ClientProtocolCode {
         AuthUserLoginReply = 0x900001,  // 用户登录返回
         CreateUserReply = 0x900002,  // 创建用户返回
+        SendChatReply = 0x900003,  // 聊天返回
     }
 
     const enum HttpProtocolPath {
@@ -185,6 +192,7 @@ declare namespace Protocols {
         [WorldProtocolCode.WaitCenterSendToWorld]: WaitCenterSendToWorld;
         [ClientProtocolCode.AuthUserLoginReply]: AuthUserLoginReply;
         [ClientProtocolCode.CreateUserReply]: CreateUserReply;
+        [ClientProtocolCode.SendChatReply]: SendChatReply;
     }
 
     interface RequestTuple {
