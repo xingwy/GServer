@@ -35,13 +35,13 @@ WorldSystem.instance.registerProtocol(
         let sender = tuple[Protocols.SendChatFields.sender];
         let channel = tuple[Protocols.SendChatFields.channel];
         let content = tuple[Protocols.SendChatFields.content];
-        let uids = tuple[Protocols.SendChatFields.uids];
+        let receiver = tuple[Protocols.SendChatFields.receiver];
         let worldChatMgr = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.WorldChatMgr);
         if (!worldChatMgr) {
             this.publishProtocol(session, Protocols.ClientProtocolCode.SendChatReply, [Constants.ResultCode.ModuleNotExist]);
             return;
         }
-        let code = worldChatMgr.handleChat(sender, channel, content, uids);
+        let code = worldChatMgr.handleChat(sender, channel, content, receiver);
         this.publishProtocol(session, Protocols.ClientProtocolCode.SendChatReply, [code]);
     }
 );
