@@ -148,5 +148,4 @@ export class Heap<T extends IHeapElement> {
         e.pointer = i;
         this._elements[i] = e;
     }
-
 }
