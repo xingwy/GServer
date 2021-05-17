@@ -163,6 +163,9 @@ export class Slots<T extends object> {
         magic = (magic === SlotConstant.MaxMagicValue) ? 1 : magic + 1;
         slot.handle = (magic * SlotConstant.MaxIndexCount) + (slot.handle & SlotConstant.IndexMask);
         slot.res = null;
+        if (this._freeSlot) {
+            slot.next = (this._freeSlot.next & SlotConstant.IndexMask);
+        }
         this._freeSlot = slot;
         --this._count;
         return res;
