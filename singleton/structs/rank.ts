@@ -102,17 +102,19 @@ export class Rank {
     * @param score 
     */
     public tset(key: string, score: number): void {
-        let node = new RBTreeNode(key, score, null);
-        node.setRed();
-        if (!this._root) {
-            node.setBlack();
-            this._root = node;
-            this._hash.set(key, node);
+        if (this._hash.has(key)) {
+            let node = this._hash.get(key);
+            node.score = score;
+            this._onUpdate(node);
         } else {
-            if (!this._hash.has(key)) {
-                this._onInsert(node, this._root);
+            let node = new RBTreeNode(key, score, null);
+            node.setRed();
+            if (!this._root) {
+                node.setBlack();
+                this._root = node;
+                this._hash.set(key, node);
             } else {
-                // update
+                this._onInsert(node, this._root);
             }
         }
     }
@@ -140,6 +142,21 @@ export class Rank {
     }
 
     /**
+     * 删除指定key
+     * @param key 
+     * @returns 
+     */
+    public tdel(key: string): number {
+        let node = this._hash.get(key);
+        if (!node) {
+            return 0;
+        }
+        this._onRemove(node)
+        this._hash.delete(key);
+        return node.score;
+    }
+
+    /**
      * 寻找位置点
      * @param e 
      * @param parent 
@@ -153,7 +170,6 @@ export class Rank {
                 this._hash.set(e.key, e);
                 this._onTuneUp(e);
             } else {
-                
                 parent = parent.left;
                 this._onInsert(e, parent);
             }
@@ -170,6 +186,13 @@ export class Rank {
         }
     }
 
+    private _onUpdate(e: RBTreeNode): void {
+        // 直接删除 重新添加新值， 因为
+         
+    }
+
+    
+
     /**
      * 移除
      * @param node 
@@ -179,14 +202,16 @@ export class Rank {
         let parent = node.parent;
         if (node.isLeaf()) {
             if (node.isRed()) {
+                // 递归调整index
                 // 红叶子节点 直接删除
                 if (node.isLeftChild()) {
                     parent.left = null;
+                    parent.index--;
                 } else {
                     parent.right = null;
                 }
             } else {
-                // 先修复 在删除
+                // 先修复 再删除
                 this._onRepair(node);
                 if (node.isLeftChild()) {
                     node.parent.left = null;
@@ -198,6 +223,7 @@ export class Rank {
             // 非叶子置换
             if (node.left && !node.right) {
                 // 和左节点置换
+                // node.left.index--;
                 this._swapNode(node, node.left);
             } else if (!node.left && node.right) {
                 // 和右节点置换
@@ -457,7 +483,7 @@ export class Rank {
      * @param nodeFirst 
      * @param nodeSecond 
      */
-    private _swapNode(nodeFirst: RBTreeNode, nodeSecond: RBTreeNode) {
+    private __swapNode(nodeFirst: RBTreeNode, nodeSecond: RBTreeNode) {
         let firstParent = nodeFirst.parent;
         let firstLeft = nodeFirst.left;
         let firstRight = nodeFirst.right;
@@ -504,6 +530,27 @@ export class Rank {
             firstRight.parent = nodeSecond;
         }
     }
+
+    /**
+     * 交换节点位置  简单值交换
+     * @param nodeFirst 
+     * @param nodeSecond 
+     */
+     private _swapNode(nodeFirst: RBTreeNode, nodeSecond: RBTreeNode) {
+        let keyFirst = nodeFirst.key;
+        let scoreFirst = nodeFirst.score;
+        let keySecond = nodeSecond.key;
+        let scoreSecond = nodeSecond.score;
+
+        nodeFirst.key = keySecond;
+        nodeFirst.score = scoreSecond;
+        nodeSecond.key = keyFirst;
+        nodeSecond.score = scoreFirst;
+
+        this._hash.set(nodeFirst.key, nodeFirst);
+        this._hash.set(nodeSecond.key, nodeSecond);
+    }
+
     
     /**
      * 比较器
@@ -570,5 +617,4 @@ export class Rank {
         }
         return show;
     }
-
 }
