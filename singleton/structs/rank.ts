@@ -191,8 +191,6 @@ export class Rank {
          
     }
 
-    
-
     /**
      * 移除
      * @param node 
@@ -206,43 +204,54 @@ export class Rank {
                 // 红叶子节点 直接删除
                 if (node.isLeftChild()) {
                     parent.left = null;
-                    parent.index--;
+                    node.parent.index--;
                 } else {
                     parent.right = null;
                 }
             } else {
                 // 先修复 再删除
-                this._onRepair(node);
+                this._onRepairNode(node);
                 if (node.isLeftChild()) {
                     node.parent.left = null;
+                    node.parent.index--;
                 } else {
                     node.parent.right = null;
                 }
             }
+            this._onRepairIndex(node.parent)
         } else {
             // 非叶子置换
             if (node.left && !node.right) {
                 // 和左节点置换
-                // node.left.index--;
-                this._swapNode(node, node.left);
+                node = this._swapNode(node, node.left);
             } else if (!node.left && node.right) {
                 // 和右节点置换
-                this._swapNode(node, node.right);
+                node = this._swapNode(node, node.right);
             } else {
                 // 双节点 寻找后继节点
                 let _swapNode = this._successor(node);
-                this._swapNode(node, _swapNode);
+                node = this._swapNode(node, _swapNode);
             }
             this._onRemove(node);
         }
         return true;
     }
 
+    private _onRepairIndex(node: RBTreeNode): void {
+        if (!node.parent) {
+            return;
+        }
+        if (node.isLeftChild()) {
+            node.parent.index--;
+        }
+        this._onRepairIndex(node.parent);
+    }
+
     /**
      * 修复
      * @param node 
      */
-    private _onRepair(node: RBTreeNode): void {
+    private _onRepairNode(node: RBTreeNode): void {
         if (node.isRoot() || node.isRed()) {
             return;
         }
@@ -263,7 +272,7 @@ export class Rank {
                     brother.left.setBlack();
                     brother.setRed();
                     this._rotateRight(brother);
-                    this._onRepair(node);
+                    this._onRepairNode(node);
                 } else if (brother.left && brother.right) {
                     brother.setColor(parent.color);
                     brother.right.setBlack();
@@ -271,7 +280,7 @@ export class Rank {
                     this._rotateLeft(parent);
                 } else if (!brother.left && !brother.right) {
                     brother.setRed();
-                    this._onRepair(parent);
+                    this._onRepairNode(parent);
                 }
             } else { 
                 // 右节点
@@ -284,7 +293,7 @@ export class Rank {
                     brother.right.setBlack();
                     brother.setRed();
                     this._rotateLeft(brother);
-                    this._onRepair(node);
+                    this._onRepairNode(node);
                 } else if (brother.left && brother.right) {
                     brother.setColor(parent.color);
                     brother.left.setBlack();
@@ -292,7 +301,7 @@ export class Rank {
                     this._rotateRight(parent);
                 } else if (!brother.left && !brother.right) {
                     brother.setRed();
-                    this._onRepair(parent);
+                    this._onRepairNode(parent);
                 }
             }
         } else {
@@ -436,11 +445,18 @@ export class Rank {
         let parent = node.parent;
         let right = node.right;
 
+        // 更新index
+        right.index += node.index;
+
         node.right = right.left;
         if (right.left) {
             right.left.parent = node;
         }
-        right.parent = parent;
+        // 链接
+        right.left = node;
+        node.parent = right;
+
+        right.parent = parent; 
         if (parent) {
             if (isLeft) {
                 parent.left = right;
@@ -460,11 +476,19 @@ export class Rank {
         let isLeft = node.isLeftChild();
         let parent = node.parent;
         let left = node.left;
+
+        // 更新index
+        // left.index += node.index;
+        node.index = (left.right ? left.right.index : 0) + 1;
         
         node.left = left.right;
         if (left.right) {
             left.right.parent = node;
         }
+
+        // 链接
+        left.right = node;
+        node.parent = left;
 
         left.parent = parent;
         if (parent) {
@@ -494,6 +518,7 @@ export class Rank {
         let secondRight = nodeSecond.right;
         let secondIsLeft = nodeSecond.isLeftChild();
 
+        // TODO 交换的节点为父子关系 需要处理
         // 重定向first node
         nodeFirst.parent = secondParent;
         if (secondParent) {
@@ -503,6 +528,7 @@ export class Rank {
                 secondParent.right = nodeFirst;
             }
         }
+
         nodeFirst.left = secondLeft;
         if (secondLeft) {
             secondLeft.parent = nodeFirst;
@@ -546,11 +572,10 @@ export class Rank {
         nodeFirst.score = scoreSecond;
         nodeSecond.key = keyFirst;
         nodeSecond.score = scoreFirst;
-
         this._hash.set(nodeFirst.key, nodeFirst);
         this._hash.set(nodeSecond.key, nodeSecond);
+        return nodeSecond;
     }
-
     
     /**
      * 比较器
@@ -588,7 +613,6 @@ export class Rank {
         let show = new Array<Array<any>>();
         let lvl = 0;
         let nodes = [this._root];
-        // console.log(this._root)
         while (true) {
             let exit = true;
             for (let node of nodes) {
