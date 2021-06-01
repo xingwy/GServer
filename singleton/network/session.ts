@@ -1,6 +1,8 @@
 import * as url from "url"
 import * as http from "http";
 import * as WebSocket from "ws";
+import * as MsgPack5 from "msgpack5";
+import * as MsgpackLite from "msgpack-lite";
 import { IAgent } from "../core/IAgent";
 import { System } from "../core/system";
 
@@ -71,7 +73,7 @@ export abstract class Session {
 
     }
 
-    public close(): void {
+    public close(code: Constants.SocketCode = Constants.SocketCode.CloseNormal): void {
         if (!this._socket) {
             return;
         }
@@ -83,7 +85,8 @@ export abstract class Session {
 
         let readyState = this._socket.readyState;
         if (readyState !== WebSocket.CLOSING && readyState !== WebSocket.CLOSED) {
-            this._socket.close();
+            console.log("_socket close", code);
+            this._socket.close(code);
         }
         this._socket = null;
     }
@@ -232,6 +235,9 @@ export class ServiceSession extends Session {
 export class ClientSession extends Session {
     private _agent: IAgent;
     public vaild: boolean = false;
+    public account: string = "";
+    public password: string = "";
+
     public get agent(): IAgent {
         return this._agent;
     }
@@ -248,13 +254,14 @@ export class ClientSession extends Session {
             let param = u.searchParams;
             let account = param.get("account");
             let password = param.get("password");
-            // todo 传入token 防止恶意攻击
-            // this.account = account;
-            // this.password = password;
+            this.account = account;
+            this.password = password;
         }
     }
     public onSocketMessage(event: WebSocket.MessageEvent): void {
         let content = <Buffer> event.data;
+        console.log(content)
+        
         // 增加接收处理分发
         try {
             if (content.length < CLIENT_FIXED_BUFFER) {
@@ -263,10 +270,13 @@ export class ClientSession extends Session {
             }
             // 也需要包含from/to 用来追源使用
             // 验证检查
-            let [opcode, flag, tuple] = this.buildFixedData(content);
+            let [from, opcode, flag, tuple] = this.buildFixedData(content);
+            console.log([from, opcode, flag, tuple])
+            
+            console.log(MsgpackLite.decode(tuple))
             // 没有通过验证  允许发送验证协议
             if (flag != Constants.SignType.Auth && !this.vaild) {
-                console.log("角色为验证");
+                console.log("角色未验证");
                 // 是否需要回复
                 return;
             }
@@ -289,7 +299,7 @@ export class ClientSession extends Session {
         return Constants.ResultCode.Success;
     }
 
-    public buildFixedData(content: Buffer): [number, number, Buffer] {
+    public buildFixedData(content: Buffer): [number, number, number, Buffer] {
         let offset = 0;
         let size = content.readUInt32LE(offset);
         offset += 4;
@@ -298,12 +308,14 @@ export class ClientSession extends Session {
             console.log("消息长度不足");
             throw(new Error("消息长度不足"));
         }
+        let from = content.readUInt32LE(offset);
+        offset += 4;
         let opcode = content.readUInt32LE(offset);
         offset += 4;
         let flag = content.readUInt8(offset);
         offset += 1;
         let tuple = content.slice(offset);
-        return [opcode, flag, tuple];
+        return [from, opcode, flag, tuple];
     }
     
     public setFixedData(from: SessionId, opcode: Uint16, flag: Uint8, content: Buffer): Buffer {

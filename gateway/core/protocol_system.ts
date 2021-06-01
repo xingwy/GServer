@@ -79,7 +79,6 @@ GatewaySystem.instance.registerProtocol(
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.ExistUser]);
             return;
         }
-        console.log(user)
         // 拿center服务器session
         let centerServic = this.getServicSession(Constants.ServicType.CenterServic);
         if (!centerServic) {
@@ -89,7 +88,6 @@ GatewaySystem.instance.registerProtocol(
         }
         let createUserToCenterReply = await this.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, [0, name, sex])
         let code = createUserToCenterReply[Protocols.CreateUserToCenterReplyFields.code];
-        console.log(code);
         if (code != Constants.ResultCode.Success) {
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
             return;
@@ -97,10 +95,8 @@ GatewaySystem.instance.registerProtocol(
         code = await accountMod.createUser(account, password);
         // 保存account uid passward映射表
         if (code != Constants.ResultCode.Success) {
-            if (code != Constants.ResultCode.Success) {
-                this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
-                return;
-            }
+            this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
+            return;
         }
         this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [Constants.ResultCode.Success]);
     },

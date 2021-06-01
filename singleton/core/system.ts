@@ -246,8 +246,6 @@ export abstract class System {
      */
     public receiveProtocol(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let session = this.uniqueToSession.get(from);
-        console.log([from, to, opcode, flags])
-        console.log(this.uniqueToSession.keys())
         // let session = this._sessions.get(handle);
         if (session == null) {
             return;
@@ -304,7 +302,6 @@ export abstract class System {
     private route(from: Uint64, to: Uint64, opcode: Uint32, flags: Uint8, content: Buffer): void {
         let targetType = opcode & Constants.ProtocolsCode.Auth;
         let session: Session;
-        console.log([from, to, opcode, flags])
         switch (targetType) {
             case Constants.ServicType.WorldServic: {
                 // 世界服消息
@@ -430,6 +427,7 @@ export abstract class System {
     public openSession(session: Session): Uint16 {
         // session.handle = this._sessions.alloc(session);
         this.uniqueToSession.set(session.unique, session); 
+        console.log(this.uniqueToSession.keys())
         switch (session.serviceType) {
             case Constants.ServicType.CenterServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);

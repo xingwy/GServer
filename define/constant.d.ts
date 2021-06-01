@@ -79,4 +79,19 @@ declare namespace Constants {
         union = 2,   // 工会
         team = 3,   // 队伍
     }
+
+    const enum SocketCode {
+        // 协议层 1000 - 2999
+        CloseNormal = 1000,             // 正常关闭
+        CloseGoingAway = 1001,          // 终端离开
+        CloseProtocolError = 1002,      // 协议错误中断
+        CloseUnsupported = 1003,        // 接收不允许的数据类型
+        CloseNoStatus = 1005,           // 没有收到预期状态码
+        // CLOSE_ABNORMAL
+
+        // 框架层 3000 - 3999
+
+        // 应用层 4000 - 4999
+        AuthUserError = 4001,           // 验证用户出错
+    }
 }

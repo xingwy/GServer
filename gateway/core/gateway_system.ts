@@ -1,9 +1,10 @@
 import { System } from "../../singleton/core/system";
-import { Session } from "../../singleton/network/session";
+import { ClientSession, Session } from "../../singleton/network/session";
 import { AcceptServer, AcceptClient } from "../../singleton/network/accept";
 import { Proxy } from "../../singleton/network/proxy";
 import { GlobelMgr } from "../../singleton/utils/globel";
 import { ModuleSystem } from "./module_system";
+import { Sign } from "../sign/login"
 
 export class GatewaySystem extends System {
 
@@ -63,8 +64,15 @@ export class GatewaySystem extends System {
         this._clientAccept.open(host, port, Constants.AcceptOperate.passive, false, async (session: Session): Promise<void> => {
             session.serviceType = Constants.ServicType.Client;
             // TODO 采用用户ID 登陆时加入map 仅是连接
-            // session.unique = unique;
+            let code = await Sign.signLogin((<ClientSession>session).account, (<ClientSession>session).password, (<ClientSession>session));
+            if (code != Constants.ResultCode.Success) {
+                // 断开session
+                session.close(Constants.SocketCode.AuthUserError);
+                return;
+            }
+            // 验证数据库账号 密码 以及UID
             // 创建连接缓存
+            console.log("client connect...")
             session.open();
             this.openSession(session);
         });
@@ -79,6 +87,7 @@ export class GatewaySystem extends System {
             // 目标网关的unique取自group
             session.serviceType = Constants.ServicType.WorldServic;
             this._worldSession.unique = GlobelMgr.instance.worldId + Constants.ServicType.WorldServic;
+            console.log("connect to world ");
             this.openSession(session);
         });
     }
