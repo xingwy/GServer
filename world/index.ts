@@ -1,5 +1,6 @@
 import { MongoMgr } from "../singleton/db/mongo";
 import { WorldSystem } from "./core/world_system";
+import { ModuleSystem } from "./core/module_system";
 import { GlobelMgr } from "../singleton/utils/globel";
 
 const CFG = require("../config.json");
@@ -29,6 +30,9 @@ export const Main = async function(core: string) {
     MongoMgr.instance.init(uri, dbName, dbOpts);
     await MongoMgr.instance.connect();
 
+    // 管理器启动
+    await ModuleSystem.instance.init();
+
     // 进程事件处理
     process.on("exit", async (code) => {
         console.log("exit");
@@ -50,4 +54,6 @@ export const Main = async function(core: string) {
     });
 };
 
-Main("gateway");
+Main("gateway").catch(e => {
+    console.log(e)
+});

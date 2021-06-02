@@ -427,7 +427,6 @@ export abstract class System {
     public openSession(session: Session): Uint16 {
         // session.handle = this._sessions.alloc(session);
         this.uniqueToSession.set(session.unique, session); 
-        console.log(this.uniqueToSession.keys())
         switch (session.serviceType) {
             case Constants.ServicType.CenterServic: {
                 this._servicesSession.set(session.serviceType, <ServiceSession> session);

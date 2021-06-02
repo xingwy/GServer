@@ -23,7 +23,7 @@ export class Agent extends IAgent {
 
     public moduleInit(): void {
         this._modules.set(Constants.ModuleName.Bag, new UserBag(this, DBModels.MongoDBKey.Bag));
-        this._modules.set(Constants.ModuleName.Human, new UserHuman(this, DBModels.MongoDBKey.Bag));
+        this._modules.set(Constants.ModuleName.Human, new UserHuman(this, DBModels.MongoDBKey.Human));
         // this.resiter(Constants.EventID.Login, "xxx", this._modules.get(DBModels.ModuleName.Bag))
 
     }
@@ -35,6 +35,8 @@ export class Agent extends IAgent {
         if (!img) {
             this._timer = setInterval(this.onTimer.bind(this), 1000);
         }
+
+        await this.fromDB();
     }
 
     public onTimer(): void {
@@ -64,8 +66,7 @@ export class Agent extends IAgent {
             // TODO SAVE DATA
             // encode 
             let data = mod.toDB();
-            let buffer: Buffer;
-            await MongoMgr.instance.hset(mod.dbKey, this.agentId, buffer);
+            await MongoMgr.instance.hset(mod.dbKey, this.agentId, data);
         }
     }
 

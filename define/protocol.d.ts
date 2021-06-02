@@ -23,8 +23,11 @@ declare namespace Protocols {
     // 登录中心服返回
     const enum LoginCenterReplyFields {
         code = 0,
+        uid = 1,
+        name = 2,
+        sex = 3,
     }
-    type LoginCenterReply = [number];
+    type LoginCenterReply = [number, number, string, number];
 
     // 创建账号（TO Center）返回
     const enum CreateUserToCenterReplyFields {

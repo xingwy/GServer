@@ -58,12 +58,11 @@ export class ModuleAccountMgr extends ModuleMgrBase {
         return this._accountMap.get(account);
     }
 
-    public async createUser(account: string, password: string): Promise<Constants.ResultCode> {
+    public async createUser(uid: number, account: string, password: string): Promise<Constants.ResultCode> {
         // 检查重复账号
         if (this.existUser(account)) {
             return Constants.ResultCode.ExistUser;
         }
-        let uid = GlobelMgr.instance.nextId();
         let user: IUserInfo = {account, password, uid};
         this._accountMap.set(account, user);
         return Constants.ResultCode.Success;
