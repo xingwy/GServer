@@ -75,7 +75,7 @@ export class MongoMgr {
                 // 创建集合
                 return null;
             }
-            let data = await collection.findOne(Object.assign(opts,{key}));
+            let data = await collection.findOne(Object.assign({}, opts,{key}));
             // return Encoding.instance.decode(data.value);
             return JSON.parse(data.value);
         } catch (error) {
@@ -97,7 +97,7 @@ export class MongoMgr {
                 // 创建集合
                 return null;
             }
-            return collection.find(Object.assign(opts,{key}))
+            return collection.find(Object.assign({}, opts,{key}))
         } catch (error) {
             
         }

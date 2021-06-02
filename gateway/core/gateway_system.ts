@@ -67,6 +67,7 @@ export class GatewaySystem extends System {
             let code = await Sign.signLogin((<ClientSession>session).account, (<ClientSession>session).password, (<ClientSession>session));
             if (code != Constants.ResultCode.Success) {
                 // 断开session
+                console.log('auth error, code:' + code)
                 session.close(Constants.SocketCode.AuthUserError);
                 return;
             }

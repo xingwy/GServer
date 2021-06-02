@@ -40,7 +40,6 @@ async function main() {
     let session = new WebSocket(`ws://127.0.0.1:10001?account=xingwy&password=123456`);
 
     session.onopen = (s) => {
-        // console.log(s);
     };
 
     session.onerror = (error) => {

@@ -1,6 +1,7 @@
 import { Agent } from "../base/agent";
 import { ModuleSystem } from "../core/module_system";
 import { GatewaySystem } from "../core/gateway_system";
+import { GlobelMgr } from "../../singleton/utils/globel";
 import { ClientSession, Session } from "../../singleton/network/session";
 
 export namespace Sign {
@@ -28,19 +29,20 @@ export namespace Sign {
             // center未连接 reply
             return Constants.ResultCode.ServicNotExist;
         }
-        let msg: Protocols.LoginCenter = [userInfo && userInfo.uid]
+        let msg: Protocols.LoginCenter = [userInfo.uid]
         let loginCenterReply = await GatewaySystem.instance.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, msg);
         code = loginCenterReply[Protocols.LoginCenterReplyFields.code];
         if (code != Constants.ResultCode.Success) {
             return code;
         }
-
+        let name = loginCenterReply[Protocols.LoginCenterReplyFields.name];
+        let sex = loginCenterReply[Protocols.LoginCenterReplyFields.sex];
         let worldServic = GatewaySystem.instance.getServicSession(Constants.ServicType.WorldServic);
         if (!worldServic) {
             // world未连接 
             return Constants.ResultCode.ServicNotExist;
         }
-        let loginWorldReply = await GatewaySystem.instance.invokeProtocol(worldServic, Protocols.WorldProtocolCode.LoginWorld, Protocols.GatewayProtocolCode.LoginWorldReply, msg);
+        let loginWorldReply = await GatewaySystem.instance.invokeProtocol(worldServic, Protocols.WorldProtocolCode.LoginWorld, Protocols.GatewayProtocolCode.LoginWorldReply, [userInfo.uid, name, sex]);
         code = loginWorldReply[Protocols.LoginWorldReplyFields.code];
         if (code != Constants.ResultCode.Success) {
             // 登录失败
@@ -70,16 +72,22 @@ export namespace Sign {
             // center未连接 reply
             return Constants.ResultCode.ServicNotExist;
         }
-        let createUserToCenterReply = await GatewaySystem.instance.invokeProtocol(centerServic, Protocols.CenterProtocolCode.LoginCenter, Protocols.GatewayProtocolCode.LoginCenterReply, [0, name, sex])
+
+        
+        
+        let uid = GlobelMgr.instance.nextId();
+        let createUserToCenterReply = await GatewaySystem.instance.invokeProtocol(centerServic, Protocols.CenterProtocolCode.CreateUserToCenter, Protocols.GatewayProtocolCode.CreateUserToCenterReply, [uid, name, sex])
         let code = createUserToCenterReply[Protocols.CreateUserToCenterReplyFields.code];
         if (code != Constants.ResultCode.Success) {
             return code;
         }
-        code = await accountMod.createUser(account, password);
+
+        code = await accountMod.createUser(uid, account, password);
         // 保存account uid passward映射表
         if (code != Constants.ResultCode.Success) {
             return code;
         }
+        
         return Constants.ResultCode.Success;
     }
 }

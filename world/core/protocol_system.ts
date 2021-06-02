@@ -11,7 +11,6 @@ WorldSystem.instance.registerWaitProtocol(
         let uid = tuple[Protocols.LoginWorldFields.uid];
         let name = tuple[Protocols.LoginWorldFields.name];
         let sex = tuple[Protocols.LoginWorldFields.sex];
-
         let worldUserMgr = ModuleSystem.instance.getModuleMgr(Constants.ModuleName.WorldUserMgr)
         let user = worldUserMgr.getUser(uid);
         let userInfo = {name, sex};
@@ -60,7 +59,6 @@ WorldSystem.instance.registerWaitProtocol(
     Protocols.WorldProtocolCode.WaitCenterSendToWorld,
     Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.WaitCenterSendToWorld): Promise<void> {
-        console.log(tuple)
         this.replyProtocol(session, Protocols.CenterProtocolCode.WaitCenterSendToWorldReply, token, [2]) 
     },
 );
@@ -70,5 +68,4 @@ setInterval(async () => {
     let gateway = WorldSystem.instance.getServicSession(Constants.ServicType.GatewayServic);
     
     let data = await WorldSystem.instance.invokeProtocol(gateway, Protocols.CenterProtocolCode.WaitWorldSendToCenter, Protocols.WorldProtocolCode.WaitWorldSendToCenterReply, [4]);
-    console.log(data)
 }, 3000)

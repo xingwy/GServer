@@ -79,7 +79,7 @@ declare namespace Constants {
         union = 2,   // 工会
         team = 3,   // 队伍
     }
-
+    
     const enum SocketCode {
         // 协议层 1000 - 2999
         CloseNormal = 1000,             // 正常关闭

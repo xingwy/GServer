@@ -1,3 +1,4 @@
+import { MongoMgr } from "../singleton/db/mongo";
 import { CenterSystem } from "./core/center_system";
 import { GlobelMgr } from "../singleton/utils/globel";
 
@@ -13,6 +14,13 @@ export const Main = async function(core: string) {
     // 初始化中心系统
     let gate = CFG.tcp.gateway;
     CenterSystem.instance.open(gate.host, gate.port);
+
+    // 初始化DB
+    let uri = CFG.mongo.uri;
+    let dbName = CFG.mongo.dbName;
+    let dbOpts = CFG.mongo.opts;
+    MongoMgr.instance.init(uri, dbName, dbOpts);
+    await MongoMgr.instance.connect();
     // 进程事件处理
     process.on("exit", async () => {
         await CenterSystem.instance.close();

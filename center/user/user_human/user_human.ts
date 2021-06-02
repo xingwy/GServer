@@ -40,8 +40,16 @@ export class UserHuman extends UserBase {
         this._name = name;
     }
 
+    public getName(): string {
+        return this._name;
+    }
+
     public setSex(sex: Constants.SexType): void {
         this._sex = sex;
+    }
+
+    public getSex(): Constants.SexType {
+        return this._sex;
     }
 }
 

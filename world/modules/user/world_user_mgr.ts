@@ -18,7 +18,6 @@ export class WorldUserMgr extends BaseMgr {
         if (!this.userMap.has(uid)) {
             this.userMap.set(uid, info);
         }
-        console.log(this.userMap);
         return Constants.ResultCode.Success;
     }
 

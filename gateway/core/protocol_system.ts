@@ -3,6 +3,7 @@ import { System } from "../../singleton/core/system";
 import { ClientSession, Session } from "../../singleton/network/session";
 import { ModuleSystem } from "./module_system";
 import { Agent } from "../base/agent";
+import { GlobelMgr } from "../../singleton/utils/globel";
 
 // 验证登录  大概为 gateway => center(拿数据) => gateway => client
 GatewaySystem.instance.registerProtocol(
@@ -92,7 +93,8 @@ GatewaySystem.instance.registerProtocol(
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);
             return;
         }
-        code = await accountMod.createUser(account, password);
+        let uid = GlobelMgr.instance.nextId();
+        code = await accountMod.createUser(uid, account, password);
         // 保存account uid passward映射表
         if (code != Constants.ResultCode.Success) {
             this.publishProtocol(session, Protocols.ClientProtocolCode.CreateUserReply, [code]);

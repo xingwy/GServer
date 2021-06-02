@@ -260,7 +260,6 @@ export class ClientSession extends Session {
     }
     public onSocketMessage(event: WebSocket.MessageEvent): void {
         let content = <Buffer> event.data;
-        console.log(content)
         
         // 增加接收处理分发
         try {
@@ -271,9 +270,7 @@ export class ClientSession extends Session {
             // 也需要包含from/to 用来追源使用
             // 验证检查
             let [from, opcode, flag, tuple] = this.buildFixedData(content);
-            console.log([from, opcode, flag, tuple])
             
-            console.log(MsgpackLite.decode(tuple))
             // 没有通过验证  允许发送验证协议
             if (flag != Constants.SignType.Auth && !this.vaild) {
                 console.log("角色未验证");

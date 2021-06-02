@@ -15,6 +15,7 @@ CenterSystem.instance.registerWaitProtocol(
         let humanMod = agent.getModule(Constants.ModuleName.Human)
         humanMod.setName(name);
         humanMod.setSex(sex);
+        await agent.toDB();
         let msg: Protocols.CreateUserToCenterReply = [Constants.ResultCode.Success];
         this.replyProtocol(session, Protocols.GatewayProtocolCode.CreateUserToCenterReply, token, msg);
     }
@@ -26,16 +27,18 @@ CenterSystem.instance.registerWaitProtocol(
     Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.LoginCenter): Promise<void> {
         let uid = tuple[Protocols.LoginCenterFields.uid];
-        if ((<CenterSystem>this).useMap.has(uid)) {
+        let agent = (<CenterSystem>this).useMap.get(uid);
+        if (agent) {
             // 重新登录
         } else {
             // 登录
-            let agent = new Agent(uid);
+            agent = new Agent(uid);
             await agent.load();
             (<CenterSystem>this).useMap.set(uid, agent);
-            console.log(agent)
         }
-        let msg: Protocols.LoginCenterReply = [Constants.ResultCode.Success];
+        let humanMod = agent.getModule(Constants.ModuleName.Human);
+        
+        let msg: Protocols.LoginCenterReply = [Constants.ResultCode.Success, uid, humanMod.getName(), humanMod.getSex()];
         this.replyProtocol(session, Protocols.GatewayProtocolCode.LoginCenterReply, token, msg);
     }
 );
@@ -53,7 +56,6 @@ CenterSystem.instance.registerWaitProtocol(
     Protocols.CenterProtocolCode.WaitWorldSendToCenter,
     Constants.SignType.Data,
     async function(this: System, session: Session, token: Uint32, tuple: Protocols.WaitWorldSendToCenter): Promise<void> {
-        console.log(tuple)
         this.replyProtocol(session, Protocols.WorldProtocolCode.WaitWorldSendToCenterReply, token, [3]);
     }
 );
